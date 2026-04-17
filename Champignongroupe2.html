@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>MycoControl — Groupe 2 (Sécurisé)</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+
+
+<style>
+/* ═══════════════════════════════════════════════
+   VARIABLES & RESET
+═══════════════════════════════════════════════ */
+:root{
+  --bg: #f0f4f0; --bg2: #ffffff; --card: #ffffff;
+  --text: #1a2e1a; --green: #1a2e1a; --accent: #2d4a2d;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0; padding: 0;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   ÉCRAN DE LOGIN
+═══════════════════════════════════════════════ */
+#login-screen {
+  display: flex; height: 100vh; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a2e1a 0%, #2d4a2d 100%);
+}
+
+.login-card {
+  background: white; padding: 40px; border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; width: 320px;
+}
+
+.login-card h2 { margin-bottom: 20px; color: var(--green); }
+
+.login-card input {
+  width: 100%; padding: 12px; margin: 10px 0;
+  border: 1.5px solid #eee; border-radius: 12px; font-family: inherit;
+}
+
+.login-card button {
+  width: 100%; padding: 14px; background: var(--green);
+  color: white; border: none; border-radius: 12px;
+  font-weight: 600; cursor: pointer; transition: 0.3s;
+}
+
+.login-card button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* ═══════════════════════════════════════════════
+   INTERFACE PRINCIPALE (Basé sur votre design)
+═══════════════════════════════════════════════ */
+#main-app { display: none; padding: 20px; }
+
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 30px; background: white; padding: 15px 25px; border-radius: 20px;
+}
+
+.logout-btn {
+  background: #eee; border: none; padding: 8px 15px; border-radius: 10px;
+  cursor: pointer; font-size: 0.9em;
+}
+
+/* Grilles et Cartes */
+.dashboard-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px; margin-bottom: 30px;
+}
+
+.card {
+  background: var(--card); border-radius: 24px; padding: 25px;
+  box-shadow: 0 4px 15px var(--border);
+}
+
+.val-display { font-size: 3rem; font-weight: 800; color: var(--green); }
+
+/* Boutons Phases */
+.phase-selector {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+}
+
+.btn-phase {
+  padding: 20px; border: 2px solid #eee; border-radius: 18px;
+  background: white; cursor: pointer; transition: 0.3s; font-weight: 600;
+}
+
+.btn-phase.active {
+  background: var(--green); color: white; border-color: var(--green);
+}
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-card">
+        <h2>🍄 MycoControl</h2>
+        <p style="color: #666; font-size: 0.9em;">Groupe 2 - Administration</p>
+        <input type="email" id="user-email" placeholder="Email" value="fanatitratolojanaharygabin03@gmail.com">
+        <input type="password" id="user-pass" placeholder="Mot de passe" value="Iotgroupe02">
+        <button onclick="handleLogin()">Se connecter</button>
+        <p id="auth-error" style="color: #e74c3c; font-size: 0.8em; margin-top: 15px;"></p>
+    </div>
+</div>
+
+<div id="main-app">
+    <div class="header">
+        <div>
+            <h1 style="margin:0; font-size: 1.5em;">Station de Contrôle</h1>
+            <span id="clock" style="color: #666; font-family: 'DM Mono';">00:00:00</span>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()">Déconnexion</button>
+    </div>
+    
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Température</h3>
+            <div class="val-display"><span id="temp-val">--</span>°C</div>
+            <p style="color: #666;">Cible: <span id="target-temp">--</span>°C</p>
+        </div>
+
+        <div class="card">
+            <h3>Humidité</h3>
+            <div class="val-display"><span id="hum-val">--</span>%</div>
+            <p style="color: #666;">Cible: <span id="target-hum">--</span>%</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Sélection de la Phase</h3>
+        <div class="phase-selector">
+            <button class="btn-phase" id="p1" onclick="changePhase(1)">1. Préparation</button>
+            <button class="btn-phase" id="p2" onclick="changePhase(2)">2. Incubation</button>
+            <button class="btn-phase" id="p3" onclick="changePhase(3)">3. Fructification</button>
+            <button class="btn-phase" id="p4" onclick="changePhase(4)">4. Récolte</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIGURATION FIREBASE
+// ═══════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyBpC8EwOVM9ag6FwGcSZX-DtN61DIiolPw",
+  authDomain: "webchampignon.firebaseapp.com",
+  databaseURL: "https://webchampignon-default-rtdb.firebaseio.com",
+  projectId: "webchampignon",
+  storageBucket: "webchampignon.firebasestorage.app",
+  messagingSenderId: "607971337031",
+  appId: "1:607971337031:web:becf45e121a4aa4c232262"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.database();
+
+// ═══════════════════════════════════════════════
+// LOGIQUE D'AUTHENTIFICATION
+// ═══════════════════════════════════════════════
+function handleLogin() {
+    const email = document.getElementById('user-email').value;
+    const pass = document.getElementById('user-pass').value;
+    auth.signInWithEmailAndPassword(email, pass).catch(err => {
+        document.getElementById('auth-error').innerText = "Identifiants incorrects.";
+    });
+}
+
+function handleLogout() { auth.signOut(); }
+
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-app').style.display = 'block';
+        startApp();
+    } else {
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('main-app').style.display = 'none';
+    }
+});
+
+// ═══════════════════════════════════════════════
+// LOGIQUE DE L'APPLICATION
+// ═══════════════════════════════════════════════
+function startApp() {
+    // Horloge
+    setInterval(() => {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+    }, 1000);
+
+    // Sync Temp/Hum (depuis ESP32)
+    db.ref('status').on('value', snap => {
+        const data = snap.val();
+        if(data) {
+            document.getElementById('temp-val').innerText = data.temp || "--";
+            document.getElementById('hum-val').innerText = data.hum || "--";
+        }
+    });
+
+    // Sync Phase
+    db.ref('config/currentPhase').on('value', snap => {
+        const ph = snap.val() || 1;
+        updateUIPhases(ph);
+    });
+}
+
+function changePhase(ph) {
+    db.ref('config/currentPhase').set(ph);
+}
+
+function updateUIPhases(ph) {
+    document.querySelectorAll('.btn-phase').forEach(b => b.classList.remove('active'));
+    document.getElementById('p' + ph).classList.add('active');
+    
+    // Mise à jour des cibles visuelles
+    const targets = {
+        1: {t: 26.5, h: 65},
+        2: {t: 25.0, h: 87.5},
+        3: {t: 22.0, h: 92},
+        4: {t: 6.0, h: 80}
+    };
+    document.getElementById('target-temp').innerText = targets[ph].t;
+    document.getElementById('target-hum').innerText = targets[ph].h;
+}
+</script>
+</body>
+</html>
