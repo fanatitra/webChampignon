@@ -303,20 +303,23 @@ void loop() {
 // On vérifie l'état de la Vanne
 if (Firebase.RTDB.getInt(&fbdo, "/controls/vanne")) {
     int etatVanne = fbdo.intData();
-    digitalWrite(12, etatVanne); // Supposons que la vanne est sur le PIN 12
+    digitalWrite(PIN_VANNE, etatVanne); // Supposons que la vanne est sur le PIN 12
 }
 
 // On vérifie l'état de la Lumière
 if (Firebase.RTDB.getInt(&fbdo, "/controls/lumiere")) {
     int etatLumiere = fbdo.intData();
-    digitalWrite(13, etatLumiere); // Supposons la lumière sur le PIN 13
+    digitalWrite(PIN_LUMIERED, etatLumiere); // Supposons la lumière sur le PIN 13
 }
 
 // On vérifie l'état du Ventilateur
 if (Firebase.RTDB.getInt(&fbdo, "/controls/ventilo")) {
     int etatVentilo = fbdo.intData();
-    digitalWrite(14, etatVentilo); // Supposons le ventilo sur le PIN 14
+    digitalWrite(PIN_VENTILO, etatVentilo); // Supposons le ventilo sur le PIN 14
 }
+
+
+
 }
 
 /*
