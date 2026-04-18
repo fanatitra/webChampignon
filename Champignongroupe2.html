@@ -5,810 +5,684 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>MycoControl — Groupe 2</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-
-<!-- Firebase SDK — même version que votre fichier original -->
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
 <style>
-/* ══════════════════════════════════════════
-   BASE
-══════════════════════════════════════════ */
-:root {
-  --bg:     #f4f7f4;
-  --card:   #ffffff;
-  --green:  #1a4d2e;
-  --green2: #2d7a4a;
-  --greenbg:#e8f5ee;
-  --lime:   #5cb85c;
-  --amber:  #c47d10;
-  --amberbg:#fff8e6;
-  --red:    #c0392b;
-  --redbg:  #fdf0ee;
-  --blue:   #1a5276;
-  --bluebg: #eaf2f8;
-  --text:   #1a2e1a;
-  --text2:  #5a7a5a;
-  --text3:  #9aaa9a;
-  --border: rgba(0,0,0,0.08);
-  --shadow: 0 2px 16px rgba(0,0,0,0.07);
-  --font:   'Outfit', sans-serif;
-  --mono:   'DM Mono', monospace;
-  --r:      14px;
-  --r2:     22px;
+:root{
+  --bg:#f2f5f2; --card:#fff; --green:#1a4d2e; --g2:#2d7a4a;
+  --glite:#e8f5ee; --lime:#5cb85c; --amber:#b8700e; --abg:#fff8e6;
+  --red:#c0392b; --rbg:#fdf0ee; --blue:#1a5276; --bbg:#eaf2f8;
+  --text:#1a2e1a; --t2:#5a7a5a; --t3:#9aaa9a; --border:rgba(0,0,0,0.07);
+  --shadow:0 2px 14px rgba(0,0,0,0.07); --r:12px; --r2:20px;
+  --font:'Outfit',sans-serif; --mono:'DM Mono',monospace;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
-button { font-family: var(--font); cursor: pointer; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+button,select,input{font-family:var(--font)}
 
-/* ══════════════════════════════════════════
-   LOGIN
-══════════════════════════════════════════ */
-#login-screen {
-  display: flex; height: 100vh;
-  align-items: center; justify-content: center;
-  background: linear-gradient(135deg, #1a4d2e 0%, #2d7a4a 100%);
-  position: relative; overflow: hidden;
+/* ── LOGIN ─────────────────────────────── */
+#login-screen{
+  display:flex;height:100vh;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1a4d2e,#2d7a4a);
 }
-#login-screen::before {
-  content: '🍄'; font-size: 22rem; position: absolute;
-  bottom: -80px; right: -60px; opacity: 0.06; pointer-events: none;
+.lbox{
+  background:#fff;padding:44px 40px;border-radius:24px;width:350px;
+  max-width:94vw;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.3);
 }
-.login-box {
-  background: #fff; padding: 44px 40px; border-radius: 24px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.25); width: 360px; max-width: 94vw;
-  text-align: center; position: relative; z-index: 1;
+.lbox h2{color:var(--green);font-size:1.7rem;font-weight:800;margin-bottom:6px}
+.lbox p{color:var(--t2);font-size:0.85rem;margin-bottom:26px}
+.lbox input{
+  width:100%;padding:13px 16px;margin-bottom:14px;border:1.5px solid #e0e0e0;
+  border-radius:var(--r);font-size:0.95rem;outline:none;transition:.2s
 }
-.login-box h2 { color: var(--green); font-size: 1.7rem; font-weight: 800; letter-spacing:-1px; margin-bottom: 4px; }
-.login-box p  { color: var(--text2); font-size: 0.85rem; margin-bottom: 28px; }
-.login-box input {
-  width: 100%; padding: 13px 16px; margin-bottom: 14px;
-  border: 1.5px solid #e0e0e0; border-radius: var(--r);
-  font-family: var(--font); font-size: 0.95rem; outline: none; transition: .2s;
+.lbox input:focus{border-color:var(--g2);box-shadow:0 0 0 3px rgba(45,122,74,.12)}
+.lbox .btn-go{
+  width:100%;padding:14px;background:var(--green);color:#fff;border:none;
+  border-radius:var(--r);font-size:1rem;font-weight:700;transition:.2s
 }
-.login-box input:focus { border-color: var(--green2); box-shadow: 0 0 0 3px rgba(45,122,74,0.12); }
-.login-box .btn-login {
-  width: 100%; padding: 14px; background: var(--green); color: #fff;
-  border: none; border-radius: var(--r); font-size: 1rem; font-weight: 700;
-  transition: .2s; margin-top: 4px;
-}
-.login-box .btn-login:hover { background: var(--green2); box-shadow: 0 4px 18px rgba(26,77,46,0.35); }
-#auth-error { color: var(--red); font-size: 0.82rem; margin-top: 12px; min-height: 18px; }
+.lbox .btn-go:hover{background:var(--g2)}
+#lerr{color:var(--red);font-size:.82rem;margin-top:12px;min-height:18px}
 
-/* ══════════════════════════════════════════
-   APP SHELL
-══════════════════════════════════════════ */
-#main-app { display: none; flex-direction: column; min-height: 100vh; }
+/* ── APP ───────────────────────────────── */
+#main-app{display:none;flex-direction:column;min-height:100vh}
 
 /* TOPBAR */
-.topbar {
-  background: var(--green); color: #fff;
-  padding: 0 28px; height: 58px;
-  display: flex; align-items: center; gap: 14px;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+.topbar{
+  background:var(--green);color:#fff;height:58px;padding:0 24px;
+  display:flex;align-items:center;gap:12px;
+  position:sticky;top:0;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,.2)
 }
-.topbar-logo { font-size: 1.35rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-.topbar-sep  { width: 1px; height: 20px; background: rgba(255,255,255,0.25); }
-.topbar-phase {
-  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
-  padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700;
-  font-family: var(--mono); letter-spacing: 0.3px;
+.tlogo{font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:7px}
+.tsep{width:1px;height:20px;background:rgba(255,255,255,.25)}
+.tbadge{
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  padding:4px 13px;border-radius:20px;font-size:.75rem;font-weight:700;
+  font-family:var(--mono)
 }
-.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 14px; }
-.clock { font-family: var(--mono); font-size: 0.95rem; opacity: .85; }
-
-/* ALARM BELL */
-.alarm-bell {
-  position: relative; font-size: 1.3rem; cursor: pointer;
-  animation: none; line-height: 1;
+.tright{margin-left:auto;display:flex;align-items:center;gap:12px}
+.tclock{font-family:var(--mono);font-size:.9rem;opacity:.85}
+.fdot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.3)}
+.fdot.ok{background:#5cb85c;box-shadow:0 0 6px #5cb85c}
+.fdot.err{background:#ff3b30}
+.finfo{font-size:.72rem;opacity:.8}
+.btn-out{
+  padding:6px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:#fff;border-radius:var(--r);font-size:.8rem;font-weight:600;transition:.2s
 }
-.alarm-bell.ringing { animation: bell 0.4s ease-in-out infinite alternate; }
-@keyframes bell { from { transform: rotate(-15deg); } to { transform: rotate(15deg); } }
-.alarm-badge {
-  position: absolute; top: -6px; right: -8px; width: 16px; height: 16px;
-  background: #ff3b30; border-radius: 50%; font-size: 0.6rem; font-weight: 700;
-  color: #fff; display: flex; align-items: center; justify-content: center;
-  display: none;
-}
-
-.fb-dot {
-  width: 9px; height: 9px; border-radius: 50%;
-  background: rgba(255,255,255,0.3); flex-shrink: 0;
-}
-.fb-dot.ok  { background: #5cb85c; box-shadow: 0 0 6px #5cb85c; }
-.fb-dot.err { background: #ff3b30; }
-.fb-info    { font-size: 0.75rem; opacity: .75; }
-
-.btn-logout {
-  padding: 7px 16px; background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3); color: #fff;
-  border-radius: var(--r); font-size: 0.82rem; font-weight: 600; transition: .2s;
-}
-.btn-logout:hover { background: rgba(255,255,255,0.25); }
+.btn-out:hover{background:rgba(255,255,255,.25)}
 
 /* ALARM BANNER */
-#alarm-banner {
-  display: none; background: var(--red); color: #fff;
-  padding: 13px 28px; font-size: 0.9rem; font-weight: 700;
-  text-align: center; letter-spacing: 0.5px;
-  animation: ablink 1s ease-in-out infinite alternate;
+#alarm-bar{
+  display:none;background:var(--red);color:#fff;text-align:center;
+  padding:12px;font-weight:700;font-size:.9rem;
+  animation:ablink 1s ease-in-out infinite alternate
 }
-@keyframes ablink { from { background: var(--red); } to { background: #e74c3c; } }
+@keyframes ablink{from{background:#c0392b}to{background:#e74c3c}}
 
-/* PHASE TABS */
-.phase-nav {
-  background: var(--card); border-bottom: 1px solid var(--border);
-  display: flex; overflow-x: auto; padding: 0 20px; scrollbar-width: none;
+/* TABS */
+.tabs{
+  background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;overflow-x:auto;padding:0 18px;scrollbar-width:none
 }
-.phase-nav::-webkit-scrollbar { display: none; }
-.ptab {
-  padding: 14px 20px; font-size: 0.84rem; font-weight: 600;
-  color: var(--text3); border-bottom: 3px solid transparent; white-space: nowrap;
-  cursor: pointer; transition: .2s; display: flex; align-items: center; gap: 8px;
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:14px 18px;font-size:.83rem;font-weight:600;color:var(--t3);
+  border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer;
+  transition:.2s;display:flex;align-items:center;gap:7px
 }
-.ptab:hover { color: var(--text2); }
-.ptab.active { color: var(--green); border-bottom-color: var(--green); }
-.ptab.done   { color: var(--text3); }
-.pnum {
-  width: 24px; height: 24px; border-radius: 50%;
-  background: var(--bg); display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem; font-weight: 700; transition: .2s;
+.tab:hover{color:var(--t2)}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.tab.done{color:var(--t3)}
+.tnum{
+  width:22px;height:22px;border-radius:50%;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700
 }
-.ptab.done   .pnum { background: var(--greenbg); color: var(--green2); }
-.ptab.active .pnum { background: var(--green);   color: #fff; }
+.tab.done .tnum{background:var(--glite);color:var(--g2)}
+.tab.active .tnum{background:var(--green);color:#fff}
 
 /* CONTENT */
-.content { padding: 22px 28px; max-width: 1100px; margin: 0 auto; flex: 1; }
-.slabel {
-  font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--text3); margin-bottom: 14px; font-family: var(--mono);
+.content{padding:20px 24px;max-width:1100px;margin:0 auto;flex:1}
+.slabel{
+  font-size:.67rem;letter-spacing:2px;text-transform:uppercase;
+  color:var(--t3);margin-bottom:12px;font-family:var(--mono)
 }
 
 /* PHASE HEADER */
-.phase-hdr {
-  background: var(--card); border-radius: var(--r2); padding: 22px 26px;
-  margin-bottom: 20px; display: flex; align-items: center; gap: 18px;
-  flex-wrap: wrap; box-shadow: var(--shadow); border: 1px solid var(--border);
-  position: relative; overflow: hidden;
+.phdr{
+  background:var(--card);border-radius:var(--r2);padding:20px 24px;
+  margin-bottom:18px;display:flex;align-items:center;gap:16px;
+  flex-wrap:wrap;box-shadow:var(--shadow);border:1px solid var(--border);
+  position:relative;overflow:hidden
 }
-.phase-hdr::after {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-  background: linear-gradient(to bottom, var(--green), var(--lime));
-  border-radius: var(--r2) 0 0 var(--r2);
+.phdr::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:5px;
+  background:linear-gradient(to bottom,var(--green),var(--lime));
+  border-radius:var(--r2) 0 0 var(--r2)
 }
-.ph-emoji { font-size: 2.6rem; }
-.ph-info  { flex: 1; }
-.ph-info h2  { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; }
-.ph-info p   { font-size: 0.83rem; color: var(--text2); margin-top: 5px; }
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-.chip  {
-  padding: 3px 12px; border-radius: 20px; font-size: 0.72rem;
-  font-weight: 700; border: 1.5px solid; font-family: var(--mono);
-}
-.chip-g { background: var(--greenbg); color: var(--green); border-color: rgba(26,77,46,0.2); }
-.chip-a { background: var(--amberbg); color: var(--amber); border-color: rgba(196,125,16,0.2); }
-.chip-b { background: var(--bluebg);  color: var(--blue);  border-color: rgba(26,82,118,0.2); }
-.chip-r { background: var(--redbg);   color: var(--red);   border-color: rgba(192,57,43,0.2); }
-
-.ph-counter { text-align: right; }
-.ph-days    { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: var(--green); line-height: 1; }
-.ph-days-s  { font-size: 0.72rem; color: var(--text2); font-family: var(--mono); }
-.prog-wrap  { height: 4px; background: #e8e8e8; border-radius: 2px; margin-top: 10px; width: 150px; overflow: hidden; }
-.prog-bar   { height: 100%; background: linear-gradient(90deg, var(--green), var(--lime)); border-radius: 2px; }
+.phemoji{font-size:2.5rem}
+.phmeta{flex:1}
+.phmeta h2{font-size:1.2rem;font-weight:800;letter-spacing:-.4px}
+.phmeta p{font-size:.82rem;color:var(--t2);margin-top:4px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.chip{padding:3px 11px;border-radius:20px;font-size:.7rem;font-weight:700;border:1.5px solid;font-family:var(--mono)}
+.cg{background:var(--glite);color:var(--green);border-color:rgba(26,77,46,.2)}
+.ca{background:var(--abg);color:var(--amber);border-color:rgba(184,112,14,.2)}
+.cb{background:var(--bbg);color:var(--blue);border-color:rgba(26,82,118,.2)}
+.cr{background:var(--rbg);color:var(--red);border-color:rgba(192,57,43,.2)}
+.phcnt{text-align:right}
+.phdays{font-family:var(--mono);font-size:2rem;font-weight:700;color:var(--green);line-height:1}
+.phdayss{font-size:.7rem;color:var(--t2);font-family:var(--mono)}
+.prog{height:4px;background:#e0e0e0;border-radius:2px;margin-top:8px;width:140px;overflow:hidden}
+.progb{height:100%;background:linear-gradient(90deg,var(--green),var(--lime));border-radius:2px}
 
 /* SENSOR GRID */
-.sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 20px; }
-.scard {
-  background: var(--card); border-radius: var(--r2); padding: 20px;
-  box-shadow: var(--shadow); border: 1.5px solid var(--border);
-  transition: border-color .2s; position: relative; overflow: hidden;
+.sgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:13px;margin-bottom:18px}
+.scard{
+  background:var(--card);border-radius:var(--r2);padding:18px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);position:relative;overflow:hidden
 }
-.scard-sensor {
-  position: absolute; top: 11px; right: 11px;
-  font-size: 0.58rem; font-family: var(--mono); color: var(--text3);
-  background: var(--bg); padding: 2px 8px; border-radius: 8px;
+.scard-tag{
+  position:absolute;top:10px;right:10px;font-size:.57rem;font-family:var(--mono);
+  color:var(--t3);background:var(--bg);padding:2px 8px;border-radius:8px
 }
-.scard-lbl {
-  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--text2); margin-bottom: 12px; font-family: var(--mono);
-  display: flex; align-items: center; gap: 6px;
-}
-.scard-val  { font-size: 2.2rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
-.scard-unit { font-size: 0.9rem; font-weight: 400; color: var(--text2); }
-.scard-sub  { font-size: 0.72rem; color: var(--text3); margin-top: 6px; font-family: var(--mono); }
-.scard-barw { height: 3px; background: #e8e8e8; border-radius: 2px; margin-top: 14px; }
-.scard-barf { height: 100%; border-radius: 2px; transition: width .5s, background .4s; }
+.slbl{font-size:.67rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--t2);margin-bottom:10px;font-family:var(--mono)}
+.sval{font-size:2.1rem;font-weight:800;line-height:1;letter-spacing:-1px}
+.sunit{font-size:.88rem;font-weight:400;color:var(--t2)}
+.ssub{font-size:.7rem;color:var(--t3);margin-top:5px;font-family:var(--mono)}
+.sbarw{height:3px;background:#e8e8e8;border-radius:2px;margin-top:12px}
+.sbarf{height:100%;border-radius:2px;transition:width .5s,background .4s}
 
 /* ACTUATOR CARDS */
-.agrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 20px; }
-.acard {
-  background: var(--card); border-radius: var(--r2); padding: 20px;
-  box-shadow: var(--shadow); border: 1.5px solid var(--border);
-  transition: border-color .3s, box-shadow .3s;
+.agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:13px;margin-bottom:18px}
+.acard{
+  background:var(--card);border-radius:var(--r2);padding:20px;
+  box-shadow:var(--shadow);border:1.5px solid var(--border);transition:border-color .3s,box-shadow .3s
 }
-.acard.is-on {
-  border-color: rgba(26,77,46,0.35);
-  box-shadow: var(--shadow), 0 0 20px rgba(45,122,74,0.12);
-}
-.acard.is-alarm {
-  border-color: rgba(192,57,43,0.4);
-  box-shadow: var(--shadow), 0 0 20px rgba(192,57,43,0.18);
-  animation: alarmcard 1s ease-in-out infinite alternate;
-}
-@keyframes alarmcard { from { box-shadow: var(--shadow); } to { box-shadow: 0 0 24px rgba(192,57,43,0.3); } }
-
-.acard-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.acard-name { font-size: 0.95rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.acard-ico  { font-size: 1.3rem; }
-.acard-pin  {
-  font-family: var(--mono); font-size: 0.68rem; color: var(--text3);
-  background: var(--bg); padding: 3px 10px; border-radius: 8px;
-}
+.acard.on{border-color:rgba(26,122,74,.35);box-shadow:var(--shadow),0 0 18px rgba(45,122,74,.1)}
+.acard.alarm{border-color:rgba(192,57,43,.45);animation:alarmcard 1s infinite alternate}
+@keyframes alarmcard{from{box-shadow:var(--shadow)}to{box-shadow:0 0 22px rgba(192,57,43,.25)}}
+.ahdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.aname{font-size:.93rem;font-weight:700;display:flex;align-items:center;gap:7px}
+.aico{font-size:1.2rem}
+.apin{font-family:var(--mono);font-size:.65rem;color:var(--t3);background:var(--bg);padding:2px 9px;border-radius:8px}
 
 /* STATE DOT */
-.state-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.sdot {
-  width: 11px; height: 11px; border-radius: 50%;
-  background: #ddd; flex-shrink: 0; transition: all .3s;
-}
-.sdot.on    { background: var(--lime); box-shadow: 0 0 10px rgba(92,184,92,0.6); animation: sdoton 2s infinite; }
-.sdot.alarm { background: var(--red);  box-shadow: 0 0 10px rgba(192,57,43,0.5); animation: sdoton 0.5s infinite; }
-@keyframes sdoton { 0%,100% { opacity:1; } 50% { opacity:.5; } }
-.stxt { font-size: 0.9rem; font-weight: 700; color: var(--text2); }
-.stxt.on    { color: var(--green2); }
-.stxt.alarm { color: var(--red); }
+.sdrow{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.sdot{width:11px;height:11px;border-radius:50%;background:#ddd;flex-shrink:0;transition:.3s}
+.sdot.on{background:var(--lime);box-shadow:0 0 8px rgba(92,184,92,.6);animation:dotpulse 2s infinite}
+.sdot.alarm{background:var(--red);box-shadow:0 0 8px rgba(192,57,43,.5);animation:dotpulse .5s infinite}
+@keyframes dotpulse{0%,100%{opacity:1}50%{opacity:.4}}
+.stxt{font-size:.88rem;font-weight:700;color:var(--t2)}
+.stxt.on{color:var(--g2)} .stxt.alarm{color:var(--red)}
 
-/* CONDITION NOTE */
-.cond-note {
-  font-size: 0.78rem; color: var(--text2); padding: 10px 14px;
-  background: var(--bg); border-radius: 10px; border-left: 3px solid var(--border);
-  font-family: var(--mono); line-height: 1.6;
+/* CONTROL BUTTONS */
+.ctrl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.cbtn{
+  flex:1;min-width:70px;padding:9px 6px;border-radius:9px;border:2px solid var(--border);
+  background:var(--bg);font-size:.78rem;font-weight:700;transition:.2s;text-align:center
 }
-.cond-note.active { border-left-color: var(--green2); background: var(--greenbg); }
-.cond-note.alarm  { border-left-color: var(--red);    background: var(--redbg); color: var(--red); }
-.cond-note.night  { border-left-color: #5b5fcf;       background: #f0f0ff; color: #5b5fcf; }
+.cbtn:hover{border-color:var(--g2);color:var(--green)}
+.cbtn.active-auto{background:var(--glite);border-color:var(--g2);color:var(--green)}
+.cbtn.active-on{background:var(--green);border-color:var(--green);color:#fff}
+.cbtn.active-off{background:#888;border-color:#888;color:#fff}
 
-/* PHASE BUTTONS */
-.psel-card {
-  background: var(--card); border-radius: var(--r2); padding: 22px;
-  margin-bottom: 20px; box-shadow: var(--shadow); border: 1.5px solid var(--border);
-}
-.psel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 14px; }
-.btn-phase {
-  padding: 16px 10px; border-radius: var(--r); border: 2px solid var(--border);
-  background: var(--bg); color: var(--text2); font-size: 0.85rem; font-weight: 700;
-  transition: .2s; text-align: center;
-}
-.btn-phase:hover  { border-color: var(--green2); color: var(--green); background: var(--greenbg); }
-.btn-phase.active { background: var(--green); border-color: var(--green); color: #fff; box-shadow: 0 4px 14px rgba(26,77,46,0.3); }
-.bph-n { font-family: var(--mono); font-size: 0.68rem; opacity: .65; display: block; margin-bottom: 5px; }
+/* SLIDER */
+.slider-row{display:flex;align-items:center;gap:10px;margin-top:10px}
+.slider-row label{font-size:.75rem;color:var(--t2);white-space:nowrap;font-family:var(--mono)}
+.slider-row input[type=range]{flex:1;accent-color:var(--green)}
+.slider-val{font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--green);min-width:38px;text-align:right}
 
-/* PARAMS TABLE */
-.ptbl-card {
-  background: var(--card); border-radius: var(--r2); padding: 22px;
-  margin-bottom: 20px; box-shadow: var(--shadow); border: 1.5px solid var(--border);
-  overflow-x: auto;
+/* NOTE */
+.note{
+  font-size:.75rem;color:var(--t2);padding:9px 12px;background:var(--bg);
+  border-radius:9px;border-left:3px solid var(--border);font-family:var(--mono);line-height:1.6;margin-top:10px
 }
-table.ptbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-table.ptbl th {
-  text-align: left; padding: 9px 14px; color: var(--text2);
-  border-bottom: 1.5px solid var(--border); font-size: 0.67rem;
-  text-transform: uppercase; letter-spacing: 1.2px; font-family: var(--mono);
+.note.on{border-left-color:var(--g2);background:var(--glite)}
+.note.alarm{border-left-color:var(--red);background:var(--rbg);color:var(--red)}
+.note.night{border-left-color:#5b5fcf;background:#f0f0ff;color:#5b5fcf}
+
+/* PHASE SELECTOR */
+.psel{background:var(--card);border-radius:var(--r2);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+.psel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px;margin-top:12px}
+.pbtn{
+  padding:15px 8px;border-radius:var(--r);border:2px solid var(--border);
+  background:var(--bg);color:var(--t2);font-size:.82rem;font-weight:700;transition:.2s;text-align:center
 }
-table.ptbl td   { padding: 11px 14px; border-bottom: 1px solid var(--border); }
-table.ptbl tr:last-child td { border-bottom: none; }
-table.ptbl tr.cur td { background: var(--greenbg); font-weight: 700; color: var(--green); }
-table.ptbl tr:hover td { background: var(--bg); }
-.td-m { font-family: var(--mono); }
+.pbtn:hover{border-color:var(--g2);color:var(--green);background:var(--glite)}
+.pbtn.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 4px 12px rgba(26,77,46,.3)}
+.pbtn-n{font-family:var(--mono);font-size:.65rem;opacity:.65;display:block;margin-bottom:4px}
+
+/* TABLE */
+.ptbl-card{background:var(--card);border-radius:var(--r2);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);border:1.5px solid var(--border);overflow-x:auto}
+table.ptbl{width:100%;border-collapse:collapse;font-size:.8rem}
+table.ptbl th{text-align:left;padding:8px 12px;color:var(--t2);border-bottom:1.5px solid var(--border);font-size:.65rem;text-transform:uppercase;letter-spacing:1px;font-family:var(--mono)}
+table.ptbl td{padding:10px 12px;border-bottom:1px solid var(--border)}
+table.ptbl tr:last-child td{border-bottom:none}
+table.ptbl tr.cur td{background:var(--glite);font-weight:700;color:var(--green)}
+table.ptbl tr:hover td{background:var(--bg)}
+.tdm{font-family:var(--mono)}
 
 /* TIMELINE */
-.tl-card {
-  background: var(--card); border-radius: var(--r2); padding: 22px;
-  margin-bottom: 20px; box-shadow: var(--shadow); border: 1.5px solid var(--border);
-}
-.tl-row  { display: flex; margin-top: 18px; overflow-x: auto; }
-.tl-item { display: flex; flex-direction: column; align-items: center; flex: 1; min-width: 80px; position: relative; }
-.tl-item:not(:last-child)::after {
-  content: ''; position: absolute; top: 14px; left: 50%; right: -50%;
-  height: 2px; background: #e0e0e0; z-index: 0;
-}
-.tl-item.done::after { background: var(--green2); }
-.tl-circ {
-  width: 28px; height: 28px; border-radius: 50%; border: 2px solid #ddd;
-  background: var(--bg); display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem; font-weight: 700; z-index: 1; font-family: var(--mono);
-  transition: all .3s;
-}
-.tl-item.done   .tl-circ { background: var(--greenbg); border-color: var(--green2); color: var(--green); }
-.tl-item.active .tl-circ {
-  background: var(--green); border-color: var(--green); color: #fff;
-  box-shadow: 0 0 14px rgba(26,77,46,0.45);
-  animation: tlp 2s ease-in-out infinite;
-}
-@keyframes tlp { 0%,100%{ box-shadow:0 0 8px rgba(26,77,46,0.3); } 50%{ box-shadow:0 0 20px rgba(26,77,46,0.6); } }
-.tl-name { font-size: 0.7rem; color: var(--text2); text-align: center; margin-top: 8px; font-weight: 600; }
-.tl-item.active .tl-name { color: var(--green); }
-.tl-days { font-size: 0.62rem; color: var(--text3); font-family: var(--mono); }
-.tl-meta {
-  display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px;
-  padding: 13px 16px; background: var(--bg); border-radius: 10px;
-}
-.tl-mi .k { font-size: 0.65rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); }
-.tl-mi .v { font-family: var(--mono); font-size: 0.87rem; font-weight: 700; margin-top: 4px; }
+.tl{background:var(--card);border-radius:var(--r2);padding:20px;margin-bottom:18px;box-shadow:var(--shadow);border:1.5px solid var(--border)}
+.tlrow{display:flex;margin-top:16px;overflow-x:auto}
+.tli{display:flex;flex-direction:column;align-items:center;flex:1;min-width:75px;position:relative}
+.tli:not(:last-child)::after{content:'';position:absolute;top:13px;left:50%;right:-50%;height:2px;background:#e0e0e0;z-index:0}
+.tli.done::after{background:var(--g2)}
+.tlc{width:27px;height:27px;border-radius:50%;border:2px solid #ddd;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;z-index:1;font-family:var(--mono);transition:.3s}
+.tli.done .tlc{background:var(--glite);border-color:var(--g2);color:var(--green)}
+.tli.active .tlc{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 12px rgba(26,77,46,.4);animation:tlp 2s infinite}
+@keyframes tlp{0%,100%{box-shadow:0 0 8px rgba(26,77,46,.3)}50%{box-shadow:0 0 18px rgba(26,77,46,.6)}}
+.tln{font-size:.68rem;color:var(--t2);text-align:center;margin-top:7px;font-weight:600}
+.tli.active .tln{color:var(--green)}
+.tld{font-size:.6rem;color:var(--t3);font-family:var(--mono)}
+.tlmeta{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;background:var(--bg);border-radius:9px}
+.tlmi .k{font-size:.63rem;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-family:var(--mono)}
+.tlmi .v{font-family:var(--mono);font-size:.85rem;font-weight:700;margin-top:3px}
 
 /* ALERT ZONE */
-.alert-zone { margin-bottom: 18px; }
-.alert-box {
-  display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px;
-  border-radius: var(--r); margin-bottom: 8px; border: 1.5px solid;
-}
-.alert-g { background: var(--greenbg); border-color: rgba(26,77,46,0.2); }
-.alert-a { background: var(--amberbg); border-color: rgba(196,125,16,0.2); }
-.alert-r { background: var(--redbg);   border-color: rgba(192,57,43,0.25); animation: alertr 1.2s ease-in-out infinite alternate; }
-@keyframes alertr { from { box-shadow: none; } to { box-shadow: 0 0 14px rgba(192,57,43,0.2); } }
-.alert-ico  { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-.alert-body strong { font-size: 0.86rem; }
-.alert-body p      { font-size: 0.78rem; color: var(--text2); margin-top: 2px; font-family: var(--mono); }
-
-/* SCREENS */
-.screen { display: none; }
-.screen.active { display: block; }
-
-/* ACTION BAR */
-.action-bar {
-  position: sticky; bottom: 0;
-  background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
-  border-top: 1px solid var(--border); padding: 13px 28px;
-  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
-}
-.action-note { font-size: 0.78rem; color: var(--text3); font-family: var(--mono); }
-.btn-force {
-  padding: 10px 20px; background: var(--green); color: #fff;
-  border: none; border-radius: var(--r); font-size: 0.88rem; font-weight: 700; transition: .2s;
-}
-.btn-force:hover { background: var(--green2); }
-.btn-reset {
-  padding: 10px 20px; background: var(--redbg);
-  border: 1.5px solid rgba(192,57,43,0.3); color: var(--red);
-  border-radius: var(--r); font-size: 0.88rem; font-weight: 700; transition: .2s;
-}
-.btn-reset:hover { background: var(--red); color: #fff; }
+.alzone{margin-bottom:16px}
+.albox{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border-radius:var(--r);margin-bottom:8px;border:1.5px solid}
+.al-g{background:var(--glite);border-color:rgba(26,77,46,.2)}
+.al-a{background:var(--abg);border-color:rgba(184,112,14,.2)}
+.al-r{background:var(--rbg);border-color:rgba(192,57,43,.25);animation:alr 1.2s infinite alternate}
+@keyframes alr{from{box-shadow:none}to{box-shadow:0 0 14px rgba(192,57,43,.18)}}
+.alic{font-size:1rem;flex-shrink:0;margin-top:1px}
+.albody strong{font-size:.84rem}
+.albody p{font-size:.76rem;color:var(--t2);margin-top:2px;font-family:var(--mono)}
 
 /* LCD SIM */
-.lcd-sim {
-  background: #1a2e1a; border-radius: 10px; padding: 13px 16px;
-  font-family: var(--mono); font-size: 0.82rem; color: #5aff5a;
-  line-height: 1.8; letter-spacing: 0.5px; border: 2px solid #0d1a0d;
-}
+.lcd-sim{background:#1a2e1a;border-radius:9px;padding:12px 14px;font-family:var(--mono);font-size:.8rem;color:#5aff5a;line-height:2;border:2px solid #0d1a0d}
 
-/* RESPONSIVE */
-@media (max-width:640px){
-  .content { padding: 14px 14px; }
-  .topbar  { padding: 0 14px; }
-  .phase-hdr { flex-direction: column; align-items: flex-start; }
-  .ph-counter { text-align: left; }
-  .prog-wrap  { width: 100%; }
+/* SCREEN */
+.screen{display:none}
+.screen.active{display:block}
+
+/* ACTION BAR */
+.actbar{
+  position:sticky;bottom:0;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);
+  border-top:1px solid var(--border);padding:12px 24px;display:flex;gap:9px;
+  align-items:center;flex-wrap:wrap;box-shadow:0 -4px 18px rgba(0,0,0,.06)
+}
+.anote{font-size:.75rem;color:var(--t3);font-family:var(--mono)}
+.btn-r1{padding:9px 18px;background:var(--green);color:#fff;border:none;border-radius:var(--r);font-size:.86rem;font-weight:700;transition:.2s}
+.btn-r1:hover{background:var(--g2)}
+.btn-r2{padding:9px 18px;background:var(--rbg);border:1.5px solid rgba(192,57,43,.3);color:var(--red);border-radius:var(--r);font-size:.86rem;font-weight:700;transition:.2s}
+.btn-r2:hover{background:var(--red);color:#fff}
+
+@media(max-width:640px){
+  .content{padding:13px}
+  .topbar{padding:0 13px}
+  .phdr{flex-direction:column;align-items:flex-start}
+  .phcnt{text-align:left}
+  .prog{width:100%}
 }
 </style>
 </head>
 <body>
 
-<!-- ════════════════════════════════════════
-     LOGIN
-════════════════════════════════════════ -->
+<!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-box">
+  <div class="lbox">
     <h2>🍄 MycoControl</h2>
     <p>Groupe 2 — Administration</p>
-    <input type="email"    id="user-email" placeholder="Email"         value="fanatitratolojanaharygabin03@gmail.com"/>
-    <input type="password" id="user-pass"  placeholder="Mot de passe"  value="Iotgroupe02"/>
-    <button class="btn-login" onclick="handleLogin()">Se connecter</button>
-    <div id="auth-error"></div>
+    <input type="email"    id="ue" value="fanatitratolojanaharygabin03@gmail.com" placeholder="Email"/>
+    <input type="password" id="up" value="Iotgroupe02" placeholder="Mot de passe"/>
+    <button class="btn-go" onclick="doLogin()">Se connecter</button>
+    <div id="lerr"></div>
   </div>
 </div>
 
-<!-- ════════════════════════════════════════
-     APP
-════════════════════════════════════════ -->
+<!-- APP -->
 <div id="main-app">
 
-  <!-- ALARME BANNER -->
-  <div id="alarm-banner">
-    🚨 ALARME TEMPÉRATURE — Électrovanne &amp; Buzzer activés — Vérifiez la chambre !
-  </div>
+  <!-- ALARM BANNER -->
+  <div id="alarm-bar">🚨 ALARME — Conditions critiques ! Buzzer actif sur ESP32</div>
 
   <!-- TOPBAR -->
   <div class="topbar">
-    <div class="topbar-logo">🍄 MycoControl</div>
-    <div class="topbar-sep"></div>
-    <div class="topbar-phase" id="tb-phase">Phase 1 — Préparation</div>
-    <div class="topbar-right">
-      <div class="clock" id="clk">00:00:00</div>
-      <div class="alarm-bell" id="alarm-bell" title="Alarme">🔔<div class="alarm-badge" id="alarm-badge">!</div></div>
-      <div class="fb-dot" id="fb-dot"></div>
-      <div class="fb-info" id="fb-info">Connexion…</div>
-      <button class="btn-logout" onclick="handleLogout()">Déconnexion</button>
+    <div class="tlogo">🍄 MycoControl</div>
+    <div class="tsep"></div>
+    <div class="tbadge" id="tb">Phase 1</div>
+    <div class="tright">
+      <div class="tclock" id="clk">00:00:00</div>
+      <div class="fdot" id="fdot"></div>
+      <div class="finfo" id="finfo">Connexion…</div>
+      <button class="btn-out" onclick="doLogout()">Déconnexion</button>
     </div>
   </div>
 
   <!-- TABS -->
-  <div class="phase-nav">
-    <div class="ptab active" data-ph="1" onclick="goPhase(1)"><div class="pnum">1</div>Préparation</div>
-    <div class="ptab"        data-ph="2" onclick="goPhase(2)"><div class="pnum">2</div>Incubation</div>
-    <div class="ptab"        data-ph="3" onclick="goPhase(3)"><div class="pnum">3</div>Fructification</div>
-    <div class="ptab"        data-ph="4" onclick="goPhase(4)"><div class="pnum">4</div>Récolte</div>
+  <div class="tabs">
+    <div class="tab active" data-ph="1" onclick="goTab(1)"><div class="tnum">1</div>Préparation</div>
+    <div class="tab"        data-ph="2" onclick="goTab(2)"><div class="tnum">2</div>Incubation</div>
+    <div class="tab"        data-ph="3" onclick="goTab(3)"><div class="tnum">3</div>Fructification</div>
+    <div class="tab"        data-ph="4" onclick="goTab(4)"><div class="tnum">4</div>Récolte</div>
   </div>
 
   <div class="content">
+    <div class="alzone" id="alzone"></div>
 
-    <!-- ALERT ZONE (toutes phases) -->
-    <div class="alert-zone" id="alert-zone"></div>
-
-    <!-- ══ PHASE 1 ══════════════════════════════ -->
+    <!-- ══ ÉCRAN PHASE 1 (affiché par défaut) ══════════════════ -->
     <div class="screen active" id="sc-1">
-      <div class="phase-hdr">
-        <div class="ph-emoji">🍄</div>
-        <div class="ph-info">
+      <!-- HEADER PHASE -->
+      <div class="phdr">
+        <div class="phemoji">🌾</div>
+        <div class="phmeta">
           <h2>Phase 1 — Préparation du substrat</h2>
-          <p>Stérilisation &amp; conditionnement — cible T: 26.5°C | H: 65%</p>
+          <p>Stérilisation &amp; conditionnement | T cible: 26.5°C | H cible: 65%</p>
           <div class="chips">
-            <span class="chip chip-b">currentPhase = 1</span>
-            <span class="chip chip-b">5 jours</span>
-            <span class="chip chip-g">Ventilo GPIO 5</span>
-            <span class="chip chip-a">Électrovanne GPIO 48</span>
+            <span class="chip cb" id="ch-ph">currentPhase = 1</span>
+            <span class="chip cb">5 jours</span>
+            <span class="chip cg">L298N GPIO25/14</span>
+            <span class="chip ca">Électrovanne GPIO48</span>
+            <span class="chip ca">MQ7 GPIO34</span>
           </div>
         </div>
-        <div class="ph-counter">
-          <div class="ph-days">5</div><div class="ph-days-s">jours</div>
-          <div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div>
+        <div class="phcnt">
+          <div class="phdays" id="phdays">5</div>
+          <div class="phdayss">jours</div>
+          <div class="prog"><div class="progb" id="progb" style="width:0%"></div></div>
         </div>
       </div>
 
       <!-- CAPTEURS -->
-      <p class="slabel">Capteurs — DHT22 GPIO 4 — Temps réel</p>
-      <div class="sgrid" id="sg-1">
-        <div class="scard" id="sc-temp">
-          <span class="scard-sensor">DHT22 / GPIO 4</span>
-          <div class="scard-lbl">🌡️ Température</div>
-          <div class="scard-val" id="v-temp" style="color:var(--green)">--<span class="scard-unit">°C</span></div>
-          <div class="scard-sub">Cible Ph.1 : <strong>26.5°C</strong> | <code>targetT = 26.5</code></div>
-          <div class="scard-barw"><div class="scard-barf" id="b-temp" style="width:50%;background:var(--lime)"></div></div>
-        </div>
-        <div class="scard" id="sc-hum">
-          <span class="scard-sensor">DHT22 / GPIO 4</span>
-          <div class="scard-lbl">💧 Humidité</div>
-          <div class="scard-val" id="v-hum" style="color:var(--blue)">--<span class="scard-unit">%</span></div>
-          <div class="scard-sub">Cible Ph.1 : <strong>65%</strong> | <code>targetH = 65.0</code></div>
-          <div class="scard-barw"><div class="scard-barf" id="b-hum" style="width:65%;background:var(--blue)"></div></div>
-        </div>
+      <p class="slabel">Capteurs — Temps réel Firebase</p>
+      <div class="sgrid">
+
+        <!-- Température -->
         <div class="scard">
-          <span class="scard-sensor">Firebase /status</span>
-          <div class="scard-lbl">🎯 Cibles actives</div>
+          <span class="scard-tag">DHT22 / GPIO4</span>
+          <div class="slbl">🌡️ Température</div>
+          <div class="sval" id="v-temp" style="color:var(--green)">--<span class="sunit">°C</span></div>
+          <div class="ssub">Cible : <strong id="lbl-tT">26.5</strong>°C</div>
+          <div class="sbarw"><div class="sbarf" id="b-temp" style="width:50%;background:var(--lime)"></div></div>
+        </div>
+
+        <!-- Humidité -->
+        <div class="scard">
+          <span class="scard-tag">DHT22 / GPIO4</span>
+          <div class="slbl">💧 Humidité</div>
+          <div class="sval" id="v-hum" style="color:var(--blue)">--<span class="sunit">%</span></div>
+          <div class="ssub">Cible : <strong id="lbl-tH">65.0</strong>%</div>
+          <div class="sbarw"><div class="sbarf" id="b-hum" style="width:65%;background:var(--blue)"></div></div>
+        </div>
+
+        <!-- CO2 MQ7 -->
+        <div class="scard" id="co2-card">
+          <span class="scard-tag">MQ7 / GPIO34</span>
+          <div class="slbl">🌫️ CO2 / Gaz (MQ7)</div>
+          <div class="sval" id="v-co2" style="color:var(--amber)">--<span class="sunit">adc</span></div>
+          <div class="ssub">Seuil alarme : 2000 ADC</div>
+          <div class="sbarw"><div class="sbarf" id="b-co2" style="width:0%;background:var(--amber)"></div></div>
+        </div>
+
+        <!-- Cibles -->
+        <div class="scard">
+          <span class="scard-tag">Firebase /status</span>
+          <div class="slbl">🎯 Cibles actives (ESP32)</div>
           <div style="margin-top:8px">
-            <div style="font-size:0.85rem;font-family:var(--mono);margin-bottom:6px">T cible : <strong id="v-targetT" style="color:var(--green)">26.5</strong>°C</div>
-            <div style="font-size:0.85rem;font-family:var(--mono)">H cible : <strong id="v-targetH" style="color:var(--blue)">65.0</strong>%</div>
+            <div style="font-size:.85rem;font-family:var(--mono);margin-bottom:6px">T : <strong id="vt-T" style="color:var(--green)">26.5</strong>°C</div>
+            <div style="font-size:.85rem;font-family:var(--mono);margin-bottom:6px">H : <strong id="vt-H" style="color:var(--blue)">65.0</strong>%</div>
+            <div style="font-size:.85rem;font-family:var(--mono)">Ph: <strong id="vt-Ph" style="color:var(--green)">1</strong></div>
           </div>
-          <div class="scard-sub" style="margin-top:10px">Phase active ESP32 : <strong id="v-phase-esp">1</strong></div>
         </div>
       </div>
 
       <!-- ACTIONNEURS -->
-      <p class="slabel">Actionneurs — État en temps réel (ESP32 → Firebase)</p>
+      <p class="slabel">Actionneurs — Boutons Web → Firebase → ESP32</p>
       <div class="agrid">
 
-        <!-- VENTILATEUR -->
-        <div class="acard" id="ac-fan">
-          <div class="acard-hdr">
-            <div class="acard-name"><span class="acard-ico">🌀</span>Ventilateur</div>
-            <span class="acard-pin">GPIO 5 — PIN_VENTILO</span>
+        <!-- VENTILATEUR A (L298N ENA) -->
+        <div class="acard" id="ac-fanA">
+          <div class="ahdr">
+            <div class="aname"><span class="aico">🌀</span>Ventilateur A</div>
+            <span class="apin">L298N ENA — GPIO25</span>
           </div>
-          <div class="state-row">
-            <div class="sdot" id="dot-fan"></div>
-            <div class="stxt" id="txt-fan">En attente…</div>
+          <div class="sdrow">
+            <div class="sdot" id="dot-fanA"></div>
+            <div class="stxt" id="txt-fanA">---</div>
           </div>
-          <div class="cond-note" id="note-fan">
-            <strong>Condition ESP32 :</strong><br/>
-            t &gt; targetT (26.5°C) → <code>HIGH</code><br/>
-            t ≤ targetT → <code>LOW</code>
+          <div class="ctrl-row">
+            <button class="cbtn active-auto" id="btnfA-0" onclick="setCtrl('ventilo',0,'fanA')">⚙ Auto</button>
+            <button class="cbtn"             id="btnfA-2" onclick="setCtrl('ventilo',2,'fanA')">▶ ON</button>
+            <button class="cbtn"             id="btnfA-1" onclick="setCtrl('ventilo',1,'fanA')">⏹ OFF</button>
           </div>
+          <div class="slider-row" style="margin-top:10px">
+            <label>Vitesse A :</label>
+            <input type="range" min="0" max="255" value="180" id="sl-fanA" oninput="updateFanSlider('A',this.value)"/>
+            <span class="slider-val" id="sv-fanA">180</span>
+          </div>
+          <div class="note on" id="note-fanA">Auto : ON si T &gt; targetT</div>
+        </div>
+
+        <!-- VENTILATEUR B (L298N ENB) -->
+        <div class="acard" id="ac-fanB">
+          <div class="ahdr">
+            <div class="aname"><span class="aico">🌪️</span>Ventilateur B</div>
+            <span class="apin">L298N ENB — GPIO14</span>
+          </div>
+          <div class="sdrow">
+            <div class="sdot" id="dot-fanB"></div>
+            <div class="stxt" id="txt-fanB">---</div>
+          </div>
+          <div class="ctrl-row">
+            <button class="cbtn active-auto" id="btnfB-0" onclick="setCtrl('ventiloB',0,'fanB')">⚙ Auto</button>
+            <button class="cbtn"             id="btnfB-2" onclick="setCtrl('ventiloB',2,'fanB')">▶ ON</button>
+            <button class="cbtn"             id="btnfB-1" onclick="setCtrl('ventiloB',1,'fanB')">⏹ OFF</button>
+          </div>
+          <div class="slider-row" style="margin-top:10px">
+            <label>Vitesse B :</label>
+            <input type="range" min="0" max="255" value="180" id="sl-fanB" oninput="updateFanSlider('B',this.value)"/>
+            <span class="slider-val" id="sv-fanB">180</span>
+          </div>
+          <div class="note on" id="note-fanB">Synchronisé avec ventilo A</div>
+        </div>
+
+        <!-- SERVOMOTEUR -->
+        <div class="acard" id="ac-servo">
+          <div class="ahdr">
+            <div class="aname"><span class="aico">🔧</span>Servomoteur</div>
+            <span class="apin">PWM — GPIO33</span>
+          </div>
+          <div class="sdrow">
+            <div class="sdot" id="dot-servo"></div>
+            <div class="stxt" id="txt-servo">0°</div>
+          </div>
+          <div class="slider-row">
+            <label>Angle :</label>
+            <input type="range" min="0" max="180" value="0" id="sl-servo" oninput="setServoAngle(this.value)"/>
+            <span class="slider-val" id="sv-servo">0°</span>
+          </div>
+          <div class="ctrl-row">
+            <button class="cbtn" onclick="setServoAngle(0)">0°</button>
+            <button class="cbtn" onclick="setServoAngle(45)">45°</button>
+            <button class="cbtn" onclick="setServoAngle(90)">90°</button>
+            <button class="cbtn" onclick="setServoAngle(135)">135°</button>
+            <button class="cbtn" onclick="setServoAngle(180)">180°</button>
+          </div>
+          <div class="note on">Auto : angle selon phase active</div>
         </div>
 
         <!-- ÉLECTROVANNE -->
         <div class="acard" id="ac-vanne">
-          <div class="acard-hdr">
-            <div class="acard-name"><span class="acard-ico">💦</span>Électrovanne</div>
-            <span class="acard-pin">GPIO 48 — PIN_VANNE</span>
+          <div class="ahdr">
+            <div class="aname"><span class="aico">💦</span>Électrovanne</div>
+            <span class="apin">Relais — GPIO48</span>
           </div>
-          <div class="state-row">
+          <div class="sdrow">
             <div class="sdot" id="dot-vanne"></div>
-            <div class="stxt" id="txt-vanne">En attente…</div>
+            <div class="stxt" id="txt-vanne">---</div>
           </div>
-          <div class="cond-note" id="note-vanne">
-            <strong>Condition ESP32 :</strong><br/>
-            h &lt; targetH (65%) → <code>HIGH</code><br/>
-            h ≥ targetH → <code>LOW</code><br/>
-            <span style="color:var(--red)">⚠ Aussi ON si alarme temp !</span>
+          <div class="ctrl-row">
+            <button class="cbtn active-auto" id="btnv-0" onclick="setCtrl('vanne',0,'vanne')">⚙ Auto</button>
+            <button class="cbtn"             id="btnv-2" onclick="setCtrl('vanne',2,'vanne')">💦 ON</button>
+            <button class="cbtn"             id="btnv-1" onclick="setCtrl('vanne',1,'vanne')">⏹ OFF</button>
+          </div>
+          <div class="note" id="note-vanne">Auto : ON si H &lt; targetH | Aussi ON si alarme CO2</div>
+        </div>
+
+        <!-- LUMIÈRE NOCTURNE -->
+        <div class="acard" id="ac-lum">
+          <div class="ahdr">
+            <div class="aname"><span class="aico">🌙</span>Lumière nocturne</div>
+            <span class="apin">LED rouge — GPIO2</span>
+          </div>
+          <div class="sdrow">
+            <div class="sdot" id="dot-lum"></div>
+            <div class="stxt" id="txt-lum">---</div>
+          </div>
+          <div class="ctrl-row">
+            <button class="cbtn active-auto" id="btnl-0" onclick="setCtrl('lumiere',0,'lum')">⚙ Auto</button>
+            <button class="cbtn"             id="btnl-1" onclick="setCtrl('lumiere',1,'lum')">🌙 ON</button>
+            <button class="cbtn"             id="btnl-2" onclick="setCtrl('lumiere',2,'lum')">☀ OFF</button>
+          </div>
+          <div class="note night" id="note-lum" id="night-cd">
+            🌇 ON → 17h30 | 🌅 OFF → 06h00<br/>
+            <span id="night-cd"></span>
           </div>
         </div>
 
         <!-- BUZZER -->
-        <div class="acard" id="ac-buzzer">
-          <div class="acard-hdr">
-            <div class="acard-name"><span class="acard-ico">🔔</span>Buzzer</div>
-            <span class="acard-pin">GPIO 15 — PIN_BUZZER</span>
+        <div class="acard" id="ac-buz">
+          <div class="ahdr">
+            <div class="aname"><span class="aico">🔔</span>Buzzer</div>
+            <span class="apin">GPIO15</span>
           </div>
-          <div class="state-row">
-            <div class="sdot" id="dot-buzzer"></div>
-            <div class="stxt" id="txt-buzzer">Inactif</div>
+          <div class="sdrow">
+            <div class="sdot" id="dot-buz"></div>
+            <div class="stxt" id="txt-buz">Inactif</div>
           </div>
-          <div class="cond-note" id="note-buzzer">
-            <strong>Déclenchement :</strong><br/>
-            t &gt; targetT + 2°C<br/>
-            3 bips longs (300ms)<br/>
-            Répète si alarme non résolue
+          <div class="note" id="note-buz">
+            🌡️ 3 bips : T &gt; targetT + 2°C<br/>
+            🌫️ 5 bips : CO2 ADC &gt; 2000
           </div>
-        </div>
-
-        <!-- LUMIÈRE NOCTURNE -->
-        <div class="acard" id="ac-night">
-          <div class="acard-hdr">
-            <div class="acard-name"><span class="acard-ico">🌙</span>Lumière nocturne</div>
-            <span class="acard-pin">GPIO 2 — PIN_LUMIERED</span>
-          </div>
-          <div class="state-row">
-            <div class="sdot" id="dot-night"></div>
-            <div class="stxt" id="txt-night">Inactif</div>
-          </div>
-          <div class="cond-note night" id="note-night">
-            <strong>Horaire automatique ESP32 :</strong><br/>
-            🌇 ON → <strong>17h30</strong><br/>
-            🌅 OFF → <strong>06h00</strong><br/>
-            Horloge NTP UTC+3 (Madagascar)
-          </div>
-          <!-- Horloge compte à rebours -->
-          <div style="margin-top:10px;font-size:0.75rem;color:#5b5fcf;font-family:var(--mono)" id="night-countdown"></div>
         </div>
 
         <!-- LCD -->
         <div class="acard">
-          <div class="acard-hdr">
-            <div class="acard-name"><span class="acard-ico">📟</span>LCD 16×2</div>
-            <span class="acard-pin">I²C — 0x27</span>
+          <div class="ahdr">
+            <div class="aname"><span class="aico">📟</span>LCD 16×2</div>
+            <span class="apin">I²C — 0x27</span>
           </div>
           <div class="lcd-sim">
-            <div>Ph:<span id="lcd-ph">1</span> T:<span id="lcd-t">--.-</span>°C</div>
-            <div>H:<span id="lcd-h">--</span>% <span id="lcd-s">Auto</span></div>
+            <div>Ph:<span id="lcd-p">1</span> T:<span id="lcd-t">--.-</span>°C</div>
+            <div>H:<span id="lcd-h">--</span>% <span id="lcd-s">OK</span></div>
           </div>
-          <div class="cond-note" style="margin-top:10px">Mis à jour toutes les 2s par l'ESP32</div>
+          <div class="note" style="margin-top:10px">Mis à jour toutes les 3s</div>
         </div>
 
       </div><!-- /agrid -->
 
       <!-- SÉLECTEUR DE PHASE -->
-      <div class="psel-card">
-        <p class="slabel">Changer de phase → écrit dans Firebase : <code>/config/currentPhase</code></p>
+      <div class="psel">
+        <p class="slabel">Changer de phase → écrit <code>/config/currentPhase</code> sur Firebase</p>
         <div class="psel-grid">
-          <button class="btn-phase active" id="pbtn-1" onclick="changePhase(1)">
-            <span class="bph-n">case 1</span>🌾 Préparation
-          </button>
-          <button class="btn-phase" id="pbtn-2" onclick="changePhase(2)">
-            <span class="bph-n">case 2</span>🧫 Incubation
-          </button>
-          <button class="btn-phase" id="pbtn-3" onclick="changePhase(3)">
-            <span class="bph-n">case 3</span>🌱 Fructification
-          </button>
-          <button class="btn-phase" id="pbtn-4" onclick="changePhase(4)">
-            <span class="bph-n">case 4</span>🍄 Récolte
-          </button>
+          <button class="pbtn active" id="pb-1" onclick="changePhase(1)"><span class="pbtn-n">case 1</span>🌾 Préparation</button>
+          <button class="pbtn"        id="pb-2" onclick="changePhase(2)"><span class="pbtn-n">case 2</span>🧫 Incubation</button>
+          <button class="pbtn"        id="pb-3" onclick="changePhase(3)"><span class="pbtn-n">case 3</span>🌱 Fructification</button>
+          <button class="pbtn"        id="pb-4" onclick="changePhase(4)"><span class="pbtn-n">case 4</span>🍄 Récolte</button>
         </div>
-        <div style="margin-top:12px;font-size:0.78rem;color:var(--text3);font-family:var(--mono)">
-          Phase Firebase actuelle : <strong id="ph-fv" style="color:var(--green)">1</strong>
-          — L'ESP32 détecte le changement en ~3 secondes
+        <div style="margin-top:11px;font-size:.76rem;color:var(--t3);font-family:var(--mono)">
+          Phase Firebase : <strong id="ph-fv" style="color:var(--green)">1</strong>
+          — ESP32 détecte en ~3s
         </div>
       </div>
 
       <!-- TABLEAU PARAMÈTRES -->
       <div class="ptbl-card">
-        <p class="slabel">Paramètres par phase — code ESP32 controlAutomation()</p>
+        <p class="slabel">Paramètres par phase — ESP32 PHASES[] array</p>
         <table class="ptbl">
           <thead><tr>
             <th>Phase</th><th>Nom</th>
-            <th>targetT (°C)</th><th>targetH (%)</th>
-            <th>Ventilo (GPIO 5)</th><th>Électrovanne (GPIO 48)</th>
-            <th>Alarme Buzzer (GPIO 15)</th>
+            <th>targetT</th><th>targetH</th>
+            <th>Servo auto</th>
+            <th>L298N vitesse</th>
+            <th>Buzzer alarme</th>
           </tr></thead>
           <tbody>
             <tr id="tr-1" class="cur">
-              <td class="td-m">case 1</td><td>🌾 Préparation</td>
-              <td class="td-m">26.5</td><td class="td-m">65.0</td>
-              <td>ON si T&gt;26.5°C</td><td>ON si H&lt;65%</td>
-              <td>ON si T&gt;28.5°C</td>
+              <td class="tdm">1</td><td>🌾 Préparation</td>
+              <td class="tdm">26.5°C</td><td class="tdm">65%</td>
+              <td class="tdm">0°</td><td class="tdm">150/255</td>
+              <td>T&gt;28.5°C | CO2&gt;2000</td>
             </tr>
             <tr id="tr-2">
-              <td class="td-m">case 2</td><td>🧫 Incubation</td>
-              <td class="td-m">25.0</td><td class="td-m">87.5</td>
-              <td>ON si T&gt;25.0°C</td><td>ON si H&lt;87.5%</td>
-              <td>ON si T&gt;27.0°C</td>
+              <td class="tdm">2</td><td>🧫 Incubation</td>
+              <td class="tdm">25.0°C</td><td class="tdm">87.5%</td>
+              <td class="tdm">45°</td><td class="tdm">180/255</td>
+              <td>T&gt;27°C | CO2&gt;2000</td>
             </tr>
             <tr id="tr-3">
-              <td class="td-m">case 3</td><td>🌱 Fructification</td>
-              <td class="td-m">22.0</td><td class="td-m">92.0</td>
-              <td>ON si T&gt;22.0°C</td><td>ON si H&lt;92%</td>
-              <td>ON si T&gt;24.0°C</td>
+              <td class="tdm">3</td><td>🌱 Fructification</td>
+              <td class="tdm">22.0°C</td><td class="tdm">92%</td>
+              <td class="tdm">90°</td><td class="tdm">220/255</td>
+              <td>T&gt;24°C | CO2&gt;2000</td>
             </tr>
             <tr id="tr-4">
-              <td class="td-m">case 4</td><td>🍄 Récolte</td>
-              <td class="td-m">6.0</td><td class="td-m">80.0</td>
-              <td>ON si T&gt;6.0°C</td><td>ON si H&lt;80%</td>
-              <td>ON si T&gt;8.0°C</td>
+              <td class="tdm">4</td><td>🍄 Récolte</td>
+              <td class="tdm">6.0°C</td><td class="tdm">80%</td>
+              <td class="tdm">135°</td><td class="tdm">100/255</td>
+              <td>T&gt;8°C | CO2&gt;2000</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <!-- TIMELINE -->
-      <div class="tl-card">
+      <div class="tl">
         <p class="slabel">Cycle de vie — Pleurotus ostreatus</p>
-        <div class="tl-row">
-          <div class="tl-item active" id="tl-1"><div class="tl-circ">1</div><div class="tl-name">Préparation</div><div class="tl-days">5 j.</div></div>
-          <div class="tl-item"        id="tl-2"><div class="tl-circ">2</div><div class="tl-name">Incubation</div><div class="tl-days">21 j.</div></div>
-          <div class="tl-item"        id="tl-3"><div class="tl-circ">3</div><div class="tl-name">Fructification</div><div class="tl-days">10 j.</div></div>
-          <div class="tl-item"        id="tl-4"><div class="tl-circ">4</div><div class="tl-name">Récolte</div><div class="tl-days">3 j.</div></div>
+        <div class="tlrow">
+          <div class="tli active" id="tl-1"><div class="tlc">1</div><div class="tln">Préparation</div><div class="tld">5j</div></div>
+          <div class="tli"        id="tl-2"><div class="tlc">2</div><div class="tln">Incubation</div><div class="tld">21j</div></div>
+          <div class="tli"        id="tl-3"><div class="tlc">3</div><div class="tln">Fructification</div><div class="tld">10j</div></div>
+          <div class="tli"        id="tl-4"><div class="tlc">4</div><div class="tln">Récolte</div><div class="tld">3j</div></div>
         </div>
-        <div class="tl-meta">
-          <div class="tl-mi"><div class="k">Phase active</div><div class="v" id="tl-ph" style="color:var(--green)">Phase 1</div></div>
-          <div class="tl-mi"><div class="k">Durée totale</div><div class="v">39 jours</div></div>
-          <div class="tl-mi"><div class="k">Lumière nocturne</div><div class="v">17h30 → 06h00</div></div>
-          <div class="tl-mi"><div class="k">Ventilateur</div><div class="v">GPIO 5</div></div>
-          <div class="tl-mi"><div class="k">Électrovanne</div><div class="v">GPIO 48</div></div>
-          <div class="tl-mi"><div class="k">Buzzer alarme</div><div class="v">GPIO 15</div></div>
+        <div class="tlmeta">
+          <div class="tlmi"><div class="k">Phase active</div><div class="v" id="tl-ph" style="color:var(--green)">Phase 1</div></div>
+          <div class="tlmi"><div class="k">Lumière nocturne</div><div class="v">17h30 → 06h00</div></div>
+          <div class="tlmi"><div class="k">L298N ENA</div><div class="v">GPIO 25</div></div>
+          <div class="tlmi"><div class="k">L298N ENB</div><div class="v">GPIO 14</div></div>
+          <div class="tlmi"><div class="k">Servo</div><div class="v">GPIO 33</div></div>
+          <div class="tlmi"><div class="k">MQ7 CO2</div><div class="v">GPIO 34</div></div>
         </div>
       </div>
     </div><!-- /sc-1 -->
 
-    <!-- ══ PHASES 2, 3, 4 : même layout, paramètres différents ══ -->
+    <!-- Écrans phases 2, 3, 4 (mêmes contrôles, même contenu dynamique) -->
     <div class="screen" id="sc-2">
-      <div class="phase-hdr">
-        <div class="ph-emoji">🧫</div>
-        <div class="ph-info">
-          <h2>Phase 2 — Incubation (Mycélium)</h2>
-          <p>Colonisation du substrat — cible T: 25.0°C | H: 87.5%</p>
-          <div class="chips">
-            <span class="chip chip-b">currentPhase = 2</span>
-            <span class="chip chip-b">21 jours</span>
-            <span class="chip chip-g">Ventilo si T&gt;25°C</span>
-            <span class="chip chip-a">Électrovanne si H&lt;87.5%</span>
-          </div>
-        </div>
-        <div class="ph-counter"><div class="ph-days">21</div><div class="ph-days-s">jours</div><div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div></div>
+      <div class="phdr">
+        <div class="phemoji">🧫</div>
+        <div class="phmeta"><h2>Phase 2 — Incubation (Mycélium)</h2><p>T cible: 25°C | H cible: 87.5% | Servo: 45°</p>
+          <div class="chips"><span class="chip cb">currentPhase = 2</span><span class="chip cb">21 jours</span><span class="chip cg">Ventilo si T&gt;25°C</span><span class="chip ca">Vanne si H&lt;87.5%</span></div></div>
+        <div class="phcnt"><div class="phdays">21</div><div class="phdayss">jours</div><div class="prog"><div class="progb" style="width:0%"></div></div></div>
       </div>
-      <p class="slabel">Données temps réel — même capteur DHT22 GPIO 4</p>
       <div class="sgrid">
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">🌡️ Température</div><div class="scard-val" id="v-temp2" style="color:var(--green)">--<span class="scard-unit">°C</span></div><div class="scard-sub">Cible Ph.2 : <strong>25.0°C</strong></div><div class="scard-barw"><div class="scard-barf" id="b-temp2" style="width:50%;background:var(--lime)"></div></div></div>
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">💧 Humidité</div><div class="scard-val" id="v-hum2" style="color:var(--blue)">--<span class="scard-unit">%</span></div><div class="scard-sub">Cible Ph.2 : <strong>87.5%</strong></div><div class="scard-barw"><div class="scard-barf" id="b-hum2" style="width:87%;background:var(--blue)"></div></div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">🌡️ Température</div><div class="sval" id="v-temp2" style="color:var(--green)">--<span class="sunit">°C</span></div><div class="ssub">Cible: 25.0°C</div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">💧 Humidité</div><div class="sval" id="v-hum2" style="color:var(--blue)">--<span class="sunit">%</span></div><div class="ssub">Cible: 87.5%</div></div>
+        <div class="scard"><span class="scard-tag">MQ7/GPIO34</span><div class="slbl">🌫️ CO2</div><div class="sval" id="v-co22" style="color:var(--amber)">--<span class="sunit">adc</span></div><div class="ssub">Seuil: 2000</div></div>
       </div>
-      <p class="slabel">Code Arduino — case 2</p>
-      <div class="ptbl-card">
-        <div style="background:#f4f7f4;border-radius:10px;padding:16px;font-family:var(--mono);font-size:0.82rem;line-height:2">
-          <span style="color:var(--blue)">case</span> <span style="color:var(--amber)">2</span>: targetT = <span style="color:var(--green)">25.0</span>; targetH = <span style="color:var(--green)">87.5</span>; <span style="color:var(--red)">break</span>;<br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VENTILO, (t &gt; <span style="color:var(--green)">25.0</span>) ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 5</span><br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VANNE,   (h &lt; <span style="color:var(--green)">87.5</span>) ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 48</span><br/>
-          <span style="color:var(--text3)">// Buzzer GPIO 15 si t &gt; 27.0°C (targetT + 2)</span>
-        </div>
-      </div>
-      <div class="psel-card"><p class="slabel">Changer de phase</p>
-        <div class="psel-grid">
-          <button class="btn-phase" id="pbtn2-1" onclick="changePhase(1)"><span class="bph-n">case 1</span>🌾 Préparation</button>
-          <button class="btn-phase active" id="pbtn2-2" onclick="changePhase(2)"><span class="bph-n">case 2</span>🧫 Incubation</button>
-          <button class="btn-phase" id="pbtn2-3" onclick="changePhase(3)"><span class="bph-n">case 3</span>🌱 Fructification</button>
-          <button class="btn-phase" id="pbtn2-4" onclick="changePhase(4)"><span class="bph-n">case 4</span>🍄 Récolte</button>
-        </div>
-      </div>
-    </div><!-- /sc-2 -->
+      <div class="psel"><p class="slabel">Changer de phase</p><div class="psel-grid">
+        <button class="pbtn" id="pb2-1" onclick="changePhase(1)"><span class="pbtn-n">case 1</span>🌾 Préparation</button>
+        <button class="pbtn active" id="pb2-2" onclick="changePhase(2)"><span class="pbtn-n">case 2</span>🧫 Incubation</button>
+        <button class="pbtn" id="pb2-3" onclick="changePhase(3)"><span class="pbtn-n">case 3</span>🌱 Fructification</button>
+        <button class="pbtn" id="pb2-4" onclick="changePhase(4)"><span class="pbtn-n">case 4</span>🍄 Récolte</button>
+      </div></div>
+    </div>
 
     <div class="screen" id="sc-3">
-      <div class="phase-hdr">
-        <div class="ph-emoji">🌱</div>
-        <div class="ph-info">
-          <h2>Phase 3 — Fructification (Pousse)</h2>
-          <p>Développement carpophores — cible T: 22.0°C | H: 92%</p>
-          <div class="chips">
-            <span class="chip chip-b">currentPhase = 3</span>
-            <span class="chip chip-b">10 jours</span>
-            <span class="chip chip-g">Ventilo si T&gt;22°C</span>
-            <span class="chip chip-a">Électrovanne si H&lt;92%</span>
-          </div>
-        </div>
-        <div class="ph-counter"><div class="ph-days">10</div><div class="ph-days-s">jours</div><div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div></div>
+      <div class="phdr">
+        <div class="phemoji">🌱</div>
+        <div class="phmeta"><h2>Phase 3 — Fructification (Pousse)</h2><p>T cible: 22°C | H cible: 92% | Servo: 90°</p>
+          <div class="chips"><span class="chip cb">currentPhase = 3</span><span class="chip cb">10 jours</span><span class="chip cg">Ventilo si T&gt;22°C</span><span class="chip ca">Vanne si H&lt;92%</span></div></div>
+        <div class="phcnt"><div class="phdays">10</div><div class="phdayss">jours</div><div class="prog"><div class="progb" style="width:0%"></div></div></div>
       </div>
-      <p class="slabel">Données temps réel — DHT22 GPIO 4</p>
       <div class="sgrid">
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">🌡️ Température</div><div class="scard-val" id="v-temp3" style="color:var(--green)">--<span class="scard-unit">°C</span></div><div class="scard-sub">Cible Ph.3 : <strong>22.0°C</strong></div><div class="scard-barw"><div class="scard-barf" id="b-temp3" style="width:50%;background:var(--lime)"></div></div></div>
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">💧 Humidité</div><div class="scard-val" id="v-hum3" style="color:var(--blue)">--<span class="scard-unit">%</span></div><div class="scard-sub">Cible Ph.3 : <strong>92%</strong></div><div class="scard-barw"><div class="scard-barf" id="b-hum3" style="width:92%;background:var(--blue)"></div></div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">🌡️ Température</div><div class="sval" id="v-temp3" style="color:var(--green)">--<span class="sunit">°C</span></div><div class="ssub">Cible: 22.0°C</div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">💧 Humidité</div><div class="sval" id="v-hum3" style="color:var(--blue)">--<span class="sunit">%</span></div><div class="ssub">Cible: 92%</div></div>
+        <div class="scard"><span class="scard-tag">MQ7/GPIO34</span><div class="slbl">🌫️ CO2</div><div class="sval" id="v-co23" style="color:var(--amber)">--<span class="sunit">adc</span></div><div class="ssub">Seuil: 2000</div></div>
       </div>
-      <p class="slabel">Code Arduino — case 3</p>
-      <div class="ptbl-card">
-        <div style="background:#f4f7f4;border-radius:10px;padding:16px;font-family:var(--mono);font-size:0.82rem;line-height:2">
-          <span style="color:var(--blue)">case</span> <span style="color:var(--amber)">3</span>: targetT = <span style="color:var(--green)">22.0</span>; targetH = <span style="color:var(--green)">92.0</span>; <span style="color:var(--red)">break</span>;<br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VENTILO, (t &gt; <span style="color:var(--green)">22.0</span>) ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 5</span><br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VANNE,   (h &lt; <span style="color:var(--green)">92.0</span>) ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 48</span><br/>
-          <span style="color:var(--text3)">// Buzzer GPIO 15 si t &gt; 24.0°C (targetT + 2)</span>
-        </div>
-      </div>
-      <div class="psel-card"><p class="slabel">Changer de phase</p>
-        <div class="psel-grid">
-          <button class="btn-phase" id="pbtn3-1" onclick="changePhase(1)"><span class="bph-n">case 1</span>🌾 Préparation</button>
-          <button class="btn-phase" id="pbtn3-2" onclick="changePhase(2)"><span class="bph-n">case 2</span>🧫 Incubation</button>
-          <button class="btn-phase active" id="pbtn3-3" onclick="changePhase(3)"><span class="bph-n">case 3</span>🌱 Fructification</button>
-          <button class="btn-phase" id="pbtn3-4" onclick="changePhase(4)"><span class="bph-n">case 4</span>🍄 Récolte</button>
-        </div>
-      </div>
-    </div><!-- /sc-3 -->
+      <div class="psel"><p class="slabel">Changer de phase</p><div class="psel-grid">
+        <button class="pbtn" id="pb3-1" onclick="changePhase(1)"><span class="pbtn-n">case 1</span>🌾 Préparation</button>
+        <button class="pbtn" id="pb3-2" onclick="changePhase(2)"><span class="pbtn-n">case 2</span>🧫 Incubation</button>
+        <button class="pbtn active" id="pb3-3" onclick="changePhase(3)"><span class="pbtn-n">case 3</span>🌱 Fructification</button>
+        <button class="pbtn" id="pb3-4" onclick="changePhase(4)"><span class="pbtn-n">case 4</span>🍄 Récolte</button>
+      </div></div>
+    </div>
 
     <div class="screen" id="sc-4">
-      <div class="phase-hdr">
-        <div class="ph-emoji">🍄</div>
-        <div class="ph-info">
-          <h2>Phase 4 — Récolte</h2>
-          <p>Conservation post-récolte — cible T: 6.0°C | H: 80%</p>
-          <div class="chips">
-            <span class="chip chip-b">currentPhase = 4</span>
-            <span class="chip chip-b">3 jours</span>
-            <span class="chip chip-g">Ventilo si T&gt;6°C</span>
-            <span class="chip chip-a">Électrovanne si H&lt;80%</span>
-          </div>
-        </div>
-        <div class="ph-counter"><div class="ph-days">3</div><div class="ph-days-s">jours</div><div class="prog-wrap"><div class="prog-bar" style="width:0%"></div></div></div>
+      <div class="phdr">
+        <div class="phemoji">🍄</div>
+        <div class="phmeta"><h2>Phase 4 — Récolte</h2><p>T cible: 6°C | H cible: 80% | Servo: 135°</p>
+          <div class="chips"><span class="chip cb">currentPhase = 4</span><span class="chip cb">3 jours</span><span class="chip cg">Ventilo si T&gt;6°C</span><span class="chip ca">Vanne si H&lt;80%</span></div></div>
+        <div class="phcnt"><div class="phdays">3</div><div class="phdayss">jours</div><div class="prog"><div class="progb" style="width:0%"></div></div></div>
       </div>
-      <p class="slabel">Données temps réel — DHT22 GPIO 4</p>
       <div class="sgrid">
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">🌡️ Température</div><div class="scard-val" id="v-temp4" style="color:var(--green)">--<span class="scard-unit">°C</span></div><div class="scard-sub">Cible Ph.4 : <strong>6.0°C</strong></div><div class="scard-barw"><div class="scard-barf" id="b-temp4" style="width:50%;background:var(--lime)"></div></div></div>
-        <div class="scard"><span class="scard-sensor">DHT22 / GPIO 4</span><div class="scard-lbl">💧 Humidité</div><div class="scard-val" id="v-hum4" style="color:var(--blue)">--<span class="scard-unit">%</span></div><div class="scard-sub">Cible Ph.4 : <strong>80%</strong></div><div class="scard-barw"><div class="scard-barf" id="b-hum4" style="width:80%;background:var(--blue)"></div></div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">🌡️ Température</div><div class="sval" id="v-temp4" style="color:var(--green)">--<span class="sunit">°C</span></div><div class="ssub">Cible: 6.0°C</div></div>
+        <div class="scard"><span class="scard-tag">DHT22/GPIO4</span><div class="slbl">💧 Humidité</div><div class="sval" id="v-hum4" style="color:var(--blue)">--<span class="sunit">%</span></div><div class="ssub">Cible: 80%</div></div>
+        <div class="scard"><span class="scard-tag">MQ7/GPIO34</span><div class="slbl">🌫️ CO2</div><div class="sval" id="v-co24" style="color:var(--amber)">--<span class="sunit">adc</span></div><div class="ssub">Seuil: 2000</div></div>
       </div>
-      <p class="slabel">Code Arduino — case 4</p>
-      <div class="ptbl-card">
-        <div style="background:#f4f7f4;border-radius:10px;padding:16px;font-family:var(--mono);font-size:0.82rem;line-height:2">
-          <span style="color:var(--blue)">case</span> <span style="color:var(--amber)">4</span>: targetT = <span style="color:var(--green)">6.0</span>;&nbsp; targetH = <span style="color:var(--green)">80.0</span>; <span style="color:var(--red)">break</span>;<br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VENTILO, (t &gt; <span style="color:var(--green)">6.0</span>)  ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 5</span><br/>
-          <span style="color:var(--text2)">digitalWrite</span>(PIN_VANNE,   (h &lt; <span style="color:var(--green)">80.0</span>) ? HIGH : LOW); <span style="color:var(--text3)">// GPIO 48</span><br/>
-          <span style="color:var(--text3)">// Buzzer GPIO 15 si t &gt; 8.0°C (targetT + 2)</span>
-        </div>
-      </div>
-      <div class="psel-card"><p class="slabel">Changer de phase</p>
-        <div class="psel-grid">
-          <button class="btn-phase" id="pbtn4-1" onclick="changePhase(1)"><span class="bph-n">case 1</span>🌾 Préparation</button>
-          <button class="btn-phase" id="pbtn4-2" onclick="changePhase(2)"><span class="bph-n">case 2</span>🧫 Incubation</button>
-          <button class="btn-phase" id="pbtn4-3" onclick="changePhase(3)"><span class="bph-n">case 3</span>🌱 Fructification</button>
-          <button class="btn-phase active" id="pbtn4-4" onclick="changePhase(4)"><span class="bph-n">case 4</span>🍄 Récolte</button>
-        </div>
-      </div>
-    </div><!-- /sc-4 -->
+      <div class="psel"><p class="slabel">Changer de phase</p><div class="psel-grid">
+        <button class="pbtn" id="pb4-1" onclick="changePhase(1)"><span class="pbtn-n">case 1</span>🌾 Préparation</button>
+        <button class="pbtn" id="pb4-2" onclick="changePhase(2)"><span class="pbtn-n">case 2</span>🧫 Incubation</button>
+        <button class="pbtn" id="pb4-3" onclick="changePhase(3)"><span class="pbtn-n">case 3</span>🌱 Fructification</button>
+        <button class="pbtn active" id="pb4-4" onclick="changePhase(4)"><span class="pbtn-n">case 4</span>🍄 Récolte</button>
+      </div></div>
+    </div>
 
   </div><!-- /content -->
 
-  <section class="manual-controls">
-    <h3>Contrôle Manuel</h3>
-    <div class="control-group">
-        <button onclick="toggleDevice('vanne')">Électrovanne (ON/OFF)</button>
-        <button onclick="toggleDevice('lumiere')">Lumière Nocturne (ON/OFF)</button>
-        <button onclick="toggleDevice('ventilo')">Ventilateur (ON/OFF)</button>
-    </div>
-</section>
-
   <!-- ACTION BAR -->
-  <div class="action-bar">
-    <div class="action-note">Firebase : <code>/config/currentPhase</code> | <code>/status/temp</code> | <code>/status/hum</code> | <code>/status/ventilo</code> | <code>/status/vanne</code> | <code>/status/nightlight</code> | <code>/alarms/temp</code></div>
-    <button class="btn-reset" onclick="if(confirm('Remettre phase 1 ?')) changePhase(1)">⟳ Réinit. Ph.1</button>
+  <div class="actbar">
+    <div class="anote">DB: /sensor/temperature | /sensor/humidity | /status/* | /controls/* | /config/currentPhase | /alarms/*</div>
+    <button class="btn-r2" onclick="if(confirm('Réinitialiser Phase 1 ?'))changePhase(1)">⟳ Reset Ph.1</button>
   </div>
 
 </div><!-- /main-app -->
 
 <script>
 // ════════════════════════════════════════════════
-//  FIREBASE — Même config que Champignongroupe2.html
+//  FIREBASE — Même config que votre fichier original
 // ════════════════════════════════════════════════
 const firebaseConfig = {
   apiKey:            "AIzaSyBpC8EwOVM9ag6FwGcSZX-DtN61DIiolPw",
@@ -818,418 +692,359 @@ const firebaseConfig = {
   storageBucket:     "webchampignon.firebasestorage.app",
   messagingSenderId: "607971337031",
   appId:             "1:607971337031:web:becf45e121a4aa4c232262"
-
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.database();
 
 // ════════════════════════════════════════════════
-//  PARAMÈTRES PAR PHASE — miroir ESP32 switch()
+//  PHASES CONFIG — miroir exact de l'ESP32
 // ════════════════════════════════════════════════
-const PHASES = {
-  1: { name:"Préparation",    emoji:"🌾", targetT:26.5, targetH:65.0  },
-  2: { name:"Incubation",     emoji:"🧫", targetT:25.0, targetH:87.5  },
-  3: { name:"Fructification", emoji:"🌱", targetT:22.0, targetH:92.0  },
-  4: { name:"Récolte",        emoji:"🍄", targetT:6.0,  targetH:80.0  }
+const PH = {
+  1:{name:"Préparation",   tT:26.5, tH:65.0,  servo:0,   days:5 },
+  2:{name:"Incubation",    tT:25.0, tH:87.5,  servo:45,  days:21},
+  3:{name:"Fructification",tT:22.0, tH:92.0,  servo:90,  days:10},
+  4:{name:"Récolte",       tT:6.0,  tH:80.0,  servo:135, days:3 }
 };
 
-// Horaire lumière nocturne (doit correspondre à l'ESP32)
-const NIGHT_ON  = { h:17, m:30 };
-const NIGHT_OFF = { h:6,  m:0  };
-
-let currentPhase = 1;
-let lastTemp = null;
-let lastHum  = null;
+let curPh = 1, lastT=null, lastH=null, lastCO2=null;
+const CO2_THRESH = 2000;
+const NIGHT_ON={h:17,m:30}, NIGHT_OFF={h:6,m:0};
 
 // ════════════════════════════════════════════════
-//  AUTH FIREBASE
+//  AUTH
 // ════════════════════════════════════════════════
-function handleLogin() {
-  const email = document.getElementById('user-email').value;
-  const pass  = document.getElementById('user-pass').value;
-  document.getElementById('auth-error').textContent = '';
-  auth.signInWithEmailAndPassword(email, pass)
-    .catch(() => { document.getElementById('auth-error').textContent = 'Identifiants incorrects.'; });
+function doLogin(){
+  const e=document.getElementById('ue').value;
+  const p=document.getElementById('up').value;
+  document.getElementById('lerr').textContent='';
+  auth.signInWithEmailAndPassword(e,p)
+    .catch(()=>document.getElementById('lerr').textContent='Identifiants incorrects.');
 }
-function handleLogout() { auth.signOut(); }
+function doLogout(){ auth.signOut(); }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('main-app').style.display     = 'flex';
-    startApp();
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('main-app').style.display     = 'none';
-  }
+auth.onAuthStateChanged(u=>{
+  document.getElementById('login-screen').style.display = u ? 'none' : 'flex';
+  document.getElementById('main-app').style.display     = u ? 'flex' : 'none';
+  if(u) startApp();
 });
 
 // ════════════════════════════════════════════════
 //  DÉMARRAGE
 // ════════════════════════════════════════════════
-function startApp() {
-  updateClock();
-  setInterval(updateClock, 1000);
-  setInterval(updateNightCountdown, 10000);
-  updateNightCountdown();
-  listenFirebase();
+function startApp(){
+  updateClock(); setInterval(updateClock,1000);
+  setInterval(updateNightCD,15000); updateNightCD();
+  listenAll();
 }
 
 // ════════════════════════════════════════════════
-//  ÉCOUTE FIREBASE TEMPS RÉEL
+//  ÉCOUTES FIREBASE TEMPS RÉEL
+//  Chemins exacts vus dans vos captures d'écran Firebase
 // ════════════════════════════════════════════════
-function listenFirebase() {
+function listenAll(){
 
-  // ── Température (ESP32 → Firebase → Web) ──────
-  db.ref('status/temp').on('value', snap => {
-    const v = parseFloat(snap.val());
-    if (!isNaN(v)) {
-      lastTemp = v;
-      const cfg = PHASES[currentPhase];
-      renderTemp(v, cfg.targetT);
-      setFbStatus(true);
-    }
-  }, () => setFbStatus(false));
+  // ── /sensor/temperature & /sensor/humidity ─────────────────
+  // (chemins vus dans Firebase image 1)
+  db.ref('sensor/temperature').on('value', s=>{
+    const v=parseFloat(s.val());
+    if(!isNaN(v)){ lastT=v; renderTemp(v); setFbOK(true); }
+  }, ()=>setFbOK(false));
 
-  // ── Humidité ──────────────────────────────────
-  db.ref('status/hum').on('value', snap => {
-    const v = parseFloat(snap.val());
-    if (!isNaN(v)) { lastHum = v; renderHum(v, PHASES[currentPhase].targetH); }
+  db.ref('sensor/humidity').on('value', s=>{
+    const v=parseFloat(s.val());
+    if(!isNaN(v)){ lastH=v; renderHum(v); }
   });
 
-  // ── Phase (bidirectionnel) ────────────────────
-  db.ref('config/currentPhase').on('value', snap => {
-    const ph = parseInt(snap.val()) || 1;
-    if (ph !== currentPhase) { currentPhase = ph; syncPhaseUI(ph); }
-    document.getElementById('ph-fv').textContent = ph;
+  // ── /status/temp & /status/hum (backup) ──────────────────
+  db.ref('status/temp').on('value', s=>{
+    const v=parseFloat(s.val());
+    if(!isNaN(v) && lastT===null){ lastT=v; renderTemp(v); setFbOK(true); }
+  });
+  db.ref('status/hum').on('value', s=>{
+    const v=parseFloat(s.val());
+    if(!isNaN(v) && lastH===null){ lastH=v; renderHum(v); }
   });
 
-  // ── Ventilateur (ESP32 → status) ─────────────
-  db.ref('status/ventilo').on('value', snap => {
-    setActuator('fan', snap.val() == 1, false);
+  // ── /status/co2 ────────────────────────────────────────────
+  db.ref('status/co2').on('value', s=>{
+    const v=parseInt(s.val());
+    if(!isNaN(v)){ lastCO2=v; renderCO2(v); }
   });
 
-  // ── Électrovanne ─────────────────────────────
-  db.ref('status/vanne').on('value', snap => {
-    setActuator('vanne', snap.val() == 1, false);
+  // ── /config/currentPhase ───────────────────────────────────
+  db.ref('config/currentPhase').on('value', s=>{
+    const ph=parseInt(s.val())||1;
+    if(ph!==curPh){ curPh=ph; syncPhaseUI(ph); }
+    document.getElementById('ph-fv').textContent=ph;
   });
 
-  // ── Lumière nocturne ─────────────────────────
-  db.ref('status/nightlight').on('value', snap => {
-    const on = snap.val() == 1;
-    setNightLight(on);
+  // ── /status/ventilo ────────────────────────────────────────
+  db.ref('status/ventilo').on('value', s=>{
+    setActState('fanA', s.val()==1, false);
+    setActState('fanB', s.val()==1, false);
   });
 
-  // ── Alarme température ────────────────────────
-  db.ref('alarms/temp').on('value', snap => {
-    const alarm = snap.val() == 1;
-    setAlarm(alarm);
-    setActuator('buzzer', alarm, alarm);
-    // Alarme → électrovanne aussi ON
-    if (alarm) setActuator('vanne', true, true);
+  // ── /status/vanne ──────────────────────────────────────────
+  db.ref('status/vanne').on('value', s=>{
+    setActState('vanne', s.val()==1, false);
   });
 
-  // ── Cibles (mis à jour par l'ESP32) ──────────
-  db.ref('status/targetT').on('value', snap => {
-    const v = snap.val();
-    if (v) document.getElementById('v-targetT').textContent = v;
+  // ── /status/nightlight ─────────────────────────────────────
+  db.ref('status/nightlight').on('value', s=>{
+    setNightUI(s.val()==1||s.val()==='1');
   });
-  db.ref('status/targetH').on('value', snap => {
-    const v = snap.val();
-    if (v) document.getElementById('v-targetH').textContent = v;
+
+  // ── /status/servo ──────────────────────────────────────────
+  db.ref('status/servo').on('value', s=>{
+    const ang=parseInt(s.val())||0;
+    document.getElementById('sl-servo').value=ang;
+    document.getElementById('sv-servo').textContent=ang+'°';
+    document.getElementById('txt-servo').textContent=ang+'°';
+    const dot=document.getElementById('dot-servo');
+    if(dot){ dot.className='sdot'+(ang>0?' on':''); }
   });
-  db.ref('status/alarm').on('value', snap => {
-    document.getElementById('v-phase-esp').textContent = currentPhase;
+
+  // ── /status/targetT & targetH ──────────────────────────────
+  db.ref('status/targetT').on('value', s=>{
+    const v=s.val();
+    if(v){ document.getElementById('vt-T').textContent=v;
+           document.getElementById('lbl-tT').textContent=v; }
+  });
+  db.ref('status/targetH').on('value', s=>{
+    const v=s.val();
+    if(v){ document.getElementById('vt-H').textContent=v;
+           document.getElementById('lbl-tH').textContent=v; }
+  });
+
+  // ── /alarms/temp & /alarms/co2 ─────────────────────────────
+  db.ref('alarms/temp').on('value', s=>{
+    const a=(s.val()==1||s.val()==='1');
+    setActState('buz', a, a);
+    document.getElementById('alarm-bar').style.display=a?'block':'none';
+    renderAlerts();
+  });
+  db.ref('alarms/co2').on('value', s=>{
+    const a=(s.val()==1||s.val()==='1');
+    setActState('buz', a, a);
+    renderAlerts();
+  });
+
+  // ── /alarms/message ────────────────────────────────────────
+  db.ref('alarms/message').on('value', s=>{
+    const msg=s.val()||'Système OK';
+    document.getElementById('alarm-bar').textContent='🚨 '+msg;
+    renderAlerts();
+  });
+
+  // ── /status/fanSpeedA & fanSpeedB ─────────────────────────
+  db.ref('status/fanSpeedA').on('value', s=>{
+    const v=parseInt(s.val())||0;
+    document.getElementById('sl-fanA').value=v;
+    document.getElementById('sv-fanA').textContent=v;
+  });
+  db.ref('status/fanSpeedB').on('value', s=>{
+    const v=parseInt(s.val())||0;
+    document.getElementById('sl-fanB').value=v;
+    document.getElementById('sv-fanB').textContent=v;
   });
 }
 
 // ════════════════════════════════════════════════
-//  RENDU TEMPÉRATURE
+//  RENDU CAPTEURS
 // ════════════════════════════════════════════════
-function renderTemp(t, targetT) {
-  const ok   = Math.abs(t - targetT) <= 2;
-  const crit = t > targetT + 4;
-  const color = crit ? 'var(--red)' : ok ? 'var(--green)' : 'var(--amber)';
-  const pct   = Math.min(100, Math.max(0, Math.round((t / 40) * 100)));
-  const bclr  = crit ? 'var(--red)' : ok ? 'var(--lime)' : 'var(--amber)';
-
-  ['','2','3','4'].forEach(s => {
-    const el  = document.getElementById('v-temp'+s);
-    const bar = document.getElementById('b-temp'+s);
-    if (el)  { el.style.color = color; el.innerHTML = t.toFixed(1)+'<span class="scard-unit">°C</span>'; }
-    if (bar) { bar.style.width = pct+'%'; bar.style.background = bclr; }
+function renderTemp(t){
+  const tT=PH[curPh].tT;
+  const ok=Math.abs(t-tT)<=2, crit=t>tT+4;
+  const col=crit?'var(--red)':ok?'var(--green)':'var(--amber)';
+  const bclr=crit?'var(--red)':ok?'var(--lime)':'var(--amber)';
+  const pct=Math.min(100,Math.max(0,Math.round(t/45*100)));
+  ['','2','3','4'].forEach(s=>{
+    const el=document.getElementById('v-temp'+s);
+    const bar=document.getElementById('b-temp'+s);
+    if(el){ el.style.color=col; el.innerHTML=t.toFixed(1)+'<span class="sunit">°C</span>'; }
+    if(bar){ bar.style.width=pct+'%'; bar.style.background=bclr; }
   });
-
-  // LCD
-  const lt = document.getElementById('lcd-t');
-  if (lt) lt.textContent = t.toFixed(1);
-
+  const lt=document.getElementById('lcd-t'); if(lt) lt.textContent=t.toFixed(1);
   renderAlerts();
 }
 
-// ════════════════════════════════════════════════
-//  RENDU HUMIDITÉ
-// ════════════════════════════════════════════════
-function renderHum(h, targetH) {
-  const ok   = Math.abs(h - targetH) <= 5;
-  const crit = h < targetH - 15;
-  const color = crit ? 'var(--red)' : ok ? 'var(--blue)' : 'var(--amber)';
-  const pct   = Math.min(100, Math.round(h));
-  const bclr  = crit ? 'var(--red)' : ok ? 'var(--blue)' : 'var(--amber)';
-
-  ['','2','3','4'].forEach(s => {
-    const el  = document.getElementById('v-hum'+s);
-    const bar = document.getElementById('b-hum'+s);
-    if (el)  { el.style.color = color; el.innerHTML = h.toFixed(0)+'<span class="scard-unit">%</span>'; }
-    if (bar) { bar.style.width = pct+'%'; bar.style.background = bclr; }
+function renderHum(h){
+  const tH=PH[curPh].tH;
+  const ok=Math.abs(h-tH)<=5, crit=h<tH-15;
+  const col=crit?'var(--red)':ok?'var(--blue)':'var(--amber)';
+  const bclr=crit?'var(--red)':ok?'var(--blue)':'var(--amber)';
+  const pct=Math.min(100,Math.round(h));
+  ['','2','3','4'].forEach(s=>{
+    const el=document.getElementById('v-hum'+s);
+    const bar=document.getElementById('b-hum'+s);
+    if(el){ el.style.color=col; el.innerHTML=h.toFixed(0)+'<span class="sunit">%</span>'; }
+    if(bar){ bar.style.width=pct+'%'; bar.style.background=bclr; }
   });
-
-  const lh = document.getElementById('lcd-h');
-  if (lh) lh.textContent = h.toFixed(0);
-
+  const lh=document.getElementById('lcd-h'); if(lh) lh.textContent=h.toFixed(0);
   renderAlerts();
 }
 
-// ════════════════════════════════════════════════
-//  AFFICHAGE ACTIONNEURS
-// ════════════════════════════════════════════════
-function setActuator(which, isOn, isAlarm) {
-  const dot  = document.getElementById('dot-'+which);
-  const txt  = document.getElementById('txt-'+which);
-  const card = document.getElementById('ac-'+which);
-  const note = document.getElementById('note-'+which);
-  if (!dot) return;
-
-  dot.className  = 'sdot' + (isAlarm ? ' alarm' : (isOn ? ' on' : ''));
-  txt.className  = 'stxt' + (isAlarm ? ' alarm' : (isOn ? ' on' : ''));
-  txt.textContent = isAlarm ? '⚠ ALARME — Actif' : (isOn ? 'ON — Actif' : 'OFF — Inactif');
-
-  if (card) {
-    card.className = 'acard' + (isAlarm ? ' is-alarm' : (isOn ? ' is-on' : ''));
-  }
-  if (note && which !== 'night') {
-    note.className = 'cond-note' + (isAlarm ? ' alarm' : (isOn ? ' active' : ''));
-  }
-}
-
-function setNightLight(on) {
-  const dot  = document.getElementById('dot-night');
-  const txt  = document.getElementById('txt-night');
-  const card = document.getElementById('ac-night');
-  if (!dot) return;
-  dot.className   = 'sdot' + (on ? ' on' : '');
-  txt.className   = 'stxt' + (on ? ' on' : '');
-  txt.textContent = on ? 'ON — Lumière nocturne active' : 'OFF — Jour (> 06h00 & < 17h30)';
-  if (card) card.className = 'acard' + (on ? ' is-on' : '');
+function renderCO2(v){
+  const pct=Math.min(100,Math.round(v/4095*100));
+  const col=v>CO2_THRESH?'var(--red)':'var(--amber)';
+  ['','2','3','4'].forEach(s=>{
+    const el=document.getElementById('v-co2'+s);
+    const bar=document.getElementById('b-co2'+s);
+    if(el){ el.style.color=col; el.innerHTML=v+'<span class="sunit">adc</span>'; }
+    if(bar){ bar.style.width=pct+'%'; bar.style.background=col; }
+  });
 }
 
 // ════════════════════════════════════════════════
-//  ALARME BANNER + CLOCHE
+//  ALERTES
 // ════════════════════════════════════════════════
-function setAlarm(active) {
-  document.getElementById('alarm-banner').style.display = active ? 'block' : 'none';
-  const bell  = document.getElementById('alarm-bell');
-  const badge = document.getElementById('alarm-badge');
-  bell.className  = 'alarm-bell' + (active ? ' ringing' : '');
-  badge.style.display = active ? 'flex' : 'none';
-
-  const ls = document.getElementById('lcd-s');
-  if (ls) ls.textContent = active ? 'ALARM' : 'Auto';
+function renderAlerts(){
+  const zone=document.getElementById('alzone'); if(!zone) return;
+  if(lastT===null||lastH===null){ zone.innerHTML=''; return; }
+  const tT=PH[curPh].tT, tH=PH[curPh].tH;
+  let html='';
+  if(lastT>tT+4)
+    html+=`<div class="albox al-r"><div class="alic">🚨</div><div class="albody"><strong>ALARME TEMPÉRATURE — Buzzer GPIO15 + Ventilo forcé</strong><p>${lastT.toFixed(1)}°C > ${tT+2}°C | L298N ENA/ENB = 255</p></div></div>`;
+  else if(lastT>tT)
+    html+=`<div class="albox al-a"><div class="alic">⚠️</div><div class="albody"><strong>Température dépasse cible — L298N actif</strong><p>${lastT.toFixed(1)}°C > ${tT}°C | Ventilo ON automatiquement</p></div></div>`;
+  if(lastCO2!==null&&lastCO2>CO2_THRESH)
+    html+=`<div class="albox al-r"><div class="alic">🌫️</div><div class="albody"><strong>ALARME CO2/GAZ (MQ7) — 5 bips buzzer</strong><p>ADC: ${lastCO2} > seuil ${CO2_THRESH} | Ventilation forcée ON</p></div></div>`;
+  if(lastH<tH-10)
+    html+=`<div class="albox al-a"><div class="alic">💧</div><div class="albody"><strong>Humidité trop basse — Électrovanne ON</strong><p>${lastH.toFixed(0)}% < ${tH}% | GPIO48 actif</p></div></div>`;
+  if(!html)
+    html=`<div class="albox al-g"><div class="alic">✅</div><div class="albody"><strong>Système OK — Phase ${curPh}: ${PH[curPh].name}</strong><p>${lastT!==null?lastT.toFixed(1):'--'}°C / cible ${tT}°C | ${lastH!==null?lastH.toFixed(0):'--'}% / cible ${tH}%</p></div></div>`;
+  zone.innerHTML=html;
+  const ls=document.getElementById('lcd-s');
+  if(ls) ls.textContent=(lastT&&lastT>PH[curPh].tT+4)?'ALARM':'OK';
 }
 
 // ════════════════════════════════════════════════
-//  ALERTES INLINE
+//  ÉTAT ACTIONNEURS
 // ════════════════════════════════════════════════
-function renderAlerts() {
-  const zone = document.getElementById('alert-zone');
-  if (!zone || lastTemp === null || lastHum === null) return;
-  const cfg = PHASES[currentPhase];
-  const dT = lastTemp - cfg.targetT;
-  const dH = cfg.targetH - lastHum;
+function setActState(which, isOn, isAlarm){
+  const dot=document.getElementById('dot-'+which);
+  const txt=document.getElementById('txt-'+which);
+  const card=document.getElementById('ac-'+which);
+  if(!dot) return;
+  dot.className='sdot'+(isAlarm?' alarm':isOn?' on':'');
+  txt.className='stxt'+(isAlarm?' alarm':isOn?' on':'');
+  txt.textContent=isAlarm?'⚠ ALARME Active':isOn?'ON — Actif':'OFF — Inactif';
+  if(card) card.className='acard'+(isAlarm?' alarm':isOn?' on':'');
+}
+function setNightUI(on){
+  setActState('lum', on, false);
+  const n=document.getElementById('note-lum');
+  if(n){ n.className='note night'; n.innerHTML=`🌇 ON → 17h30 | 🌅 OFF → 06h00<br/><span id="night-cd">${document.getElementById('night-cd')?.textContent||''}</span>`; }
+}
 
-  let html = '';
-
-  if (dT > 4) {
-    html += `<div class="alert-box alert-r"><div class="alert-ico">🚨</div><div class="alert-body">
-      <strong>ALARME — Température critique (GPIO 15 Buzzer + GPIO 48 Électrovanne)</strong>
-      <p>${lastTemp.toFixed(1)}°C &gt; ${cfg.targetT + 2}°C — Buzzer 3 bips — Vanne forcée ON</p>
-    </div></div>`;
-  } else if (dT > 2) {
-    html += `<div class="alert-box alert-a"><div class="alert-ico">⚠️</div><div class="alert-body">
-      <strong>Température dépasse la cible — Ventilateur ON (GPIO 5)</strong>
-      <p>${lastTemp.toFixed(1)}°C &gt; ${cfg.targetT}°C | Écart : +${dT.toFixed(1)}°C</p>
-    </div></div>`;
+// ════════════════════════════════════════════════
+//  BOUTONS CONTRÔLE → FIREBASE
+// ════════════════════════════════════════════════
+function setCtrl(path, val, which){
+  db.ref('controls/'+path).set(val);
+  // Mettre à jour l'apparence des boutons
+  const prefixes={'fanA':'btnfA','fanB':'btnfB','vanne':'btnv','lum':'btnl'};
+  const prefix=prefixes[which];
+  if(prefix){
+    const classes={'0':'active-auto','2':'active-on','1':'active-off'};
+    [0,1,2].forEach(v=>{
+      const btn=document.getElementById(prefix+'-'+v);
+      if(btn){ btn.className='cbtn'+(v===val?' '+classes[v]:''); }
+    });
   }
+  console.log('[FB] /controls/'+path+' = '+val);
+}
 
-  if (dH > 10) {
-    html += `<div class="alert-box alert-a"><div class="alert-ico">⚠️</div><div class="alert-body">
-      <strong>Humidité trop basse — Électrovanne ON (GPIO 48)</strong>
-      <p>${lastHum.toFixed(0)}% &lt; ${cfg.targetH}% | Manque : ${dH.toFixed(1)}%</p>
-    </div></div>`;
-  }
+function setServoAngle(angle){
+  angle=parseInt(angle);
+  document.getElementById('sl-servo').value=angle;
+  document.getElementById('sv-servo').textContent=angle+'°';
+  db.ref('controls/servo').set(angle);
+  console.log('[FB] /controls/servo =',angle);
+}
 
-  if (!html) {
-    html = `<div class="alert-box alert-g"><div class="alert-ico">✅</div><div class="alert-body">
-      <strong>Paramètres dans les plages cibles — Phase ${currentPhase} : ${cfg.name}</strong>
-      <p>${lastTemp.toFixed(1)}°C / cible ${cfg.targetT}°C | ${lastHum.toFixed(0)}% / cible ${cfg.targetH}%</p>
-    </div></div>`;
-  }
+function updateFanSlider(which, val){
+  document.getElementById('sv-fan'+which).textContent=val;
+  // Envoyer vitesse personnalisée
+  db.ref('controls/fanSpeed'+which).set(parseInt(val));
+}
 
-  zone.innerHTML = html;
+// ════════════════════════════════════════════════
+//  CHANGEMENT DE PHASE
+// ════════════════════════════════════════════════
+function changePhase(ph){
+  curPh=ph;
+  db.ref('config/currentPhase').set(ph).then(()=>syncPhaseUI(ph));
+}
+
+function syncPhaseUI(ph){
+  const cfg=PH[ph]; if(!cfg) return;
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t=>{
+    const p=parseInt(t.dataset.ph);
+    t.classList.toggle('active',p===ph);
+    t.classList.toggle('done',p<ph);
+  });
+  // Écrans
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('sc-'+ph); if(sc) sc.classList.add('active');
+  // Boutons phase (tous les écrans)
+  document.querySelectorAll('[id^="pb"]').forEach(b=>{
+    const parts=b.id.replace('pb','').split('-');
+    const bph=parseInt(parts[parts.length-1]);
+    b.classList.toggle('active',bph===ph);
+  });
+  // Tableau
+  for(let i=1;i<=4;i++){ const r=document.getElementById('tr-'+i); if(r) r.classList.toggle('cur',i===ph); }
+  // Timeline
+  for(let i=1;i<=4;i++){ const tl=document.getElementById('tl-'+i); if(tl) tl.className='tli'+(i<ph?' done':i===ph?' active':''); }
+  // Infos
+  document.getElementById('tb').textContent='Phase '+ph+' — '+cfg.name;
+  const tlph=document.getElementById('tl-ph'); if(tlph) tlph.textContent='Phase '+ph+' — '+cfg.name;
+  const lcdp=document.getElementById('lcd-p'); if(lcdp) lcdp.textContent=ph;
+  const chph=document.getElementById('ch-ph'); if(chph) chph.textContent='currentPhase = '+ph;
+  const vtp=document.getElementById('vt-Ph'); if(vtp) vtp.textContent=ph;
+  // Recalculer alertes
+  if(lastT!==null) renderTemp(lastT);
+  if(lastH!==null) renderHum(lastH);
+}
+
+function goTab(ph){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',parseInt(t.dataset.ph)===ph));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('sc-'+ph); if(sc) sc.classList.add('active');
 }
 
 // ════════════════════════════════════════════════
 //  COMPTE À REBOURS LUMIÈRE NOCTURNE
 // ════════════════════════════════════════════════
-function updateNightCountdown() {
-  const el = document.getElementById('night-countdown');
-  if (!el) return;
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes();
-  const nowMin = h * 60 + m;
-  const onMin  = NIGHT_ON.h * 60 + NIGHT_ON.m;   // 17*60+30 = 1050
-  const offMin = NIGHT_OFF.h * 60 + NIGHT_OFF.m; // 6*60    = 360
-
-  // Nuit active si >= 17:30 OU < 06:00
-  const nightActive = (nowMin >= onMin || nowMin < offMin);
-
-  let diffMin;
-  if (nightActive) {
-    // Compte jusqu'à 06:00
-    diffMin = nowMin < offMin
-      ? (offMin - nowMin)
-      : (24*60 - nowMin + offMin);
-    el.textContent = `🌙 Lumière nocturne ON — s'éteint dans ${formatMin(diffMin)}`;
-  } else {
-    // Compte jusqu'à 17:30
-    diffMin = onMin - nowMin;
-    el.textContent = `☀️ Lumière nocturne OFF — s'allume dans ${formatMin(diffMin)}`;
-  }
-}
-function formatMin(min) {
-  const h = Math.floor(min / 60);
-  const m = min % 60;
-  return h > 0 ? `${h}h${String(m).padStart(2,'0')}` : `${m} min`;
-}
-
-// ════════════════════════════════════════════════
-//  CHANGER DE PHASE (Web → Firebase → ESP32)
-// ════════════════════════════════════════════════
-function changePhase(ph) {
-  currentPhase = ph;
-  db.ref('config/currentPhase').set(ph)
-    .then(() => {
-      syncPhaseUI(ph);
-      // Recalculer alertes avec nouveaux seuils
-      if (lastTemp !== null) renderTemp(lastTemp, PHASES[ph].targetT);
-      if (lastHum  !== null) renderHum(lastHum,   PHASES[ph].targetH);
-    })
-    .catch(e => alert('Erreur Firebase : ' + e.message));
-}
-
-// ════════════════════════════════════════════════
-//  SYNCHRONISATION UI
-// ════════════════════════════════════════════════
-function syncPhaseUI(ph) {
-  const cfg = PHASES[ph];
-
-  // Tabs
-  document.querySelectorAll('.ptab').forEach(t => {
-    const p = parseInt(t.dataset.ph);
-    t.classList.toggle('active', p === ph);
-    t.classList.toggle('done',   p <  ph);
-  });
-
-  // Screens
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const sc = document.getElementById('sc-'+ph);
-  if (sc) sc.classList.add('active');
-
-  // Tous les boutons phase (chaque page en a)
-  document.querySelectorAll('[id^="pbtn"]').forEach(b => {
-    // ex: pbtn-1, pbtn2-1, pbtn3-1, pbtn4-1 → extraire le numéro de phase
-    const parts = b.id.replace('pbtn','').split('-');
-    const bph   = parseInt(parts[parts.length - 1]);
-    b.classList.toggle('active', bph === ph);
-  });
-
-  // Tableau paramètres
-  for (let i = 1; i <= 4; i++) {
-    const r = document.getElementById('tr-'+i);
-    if (r) r.classList.toggle('cur', i === ph);
-  }
-
-  // Timeline
-  for (let i = 1; i <= 4; i++) {
-    const tl = document.getElementById('tl-'+i);
-    if (tl) tl.className = 'tl-item' + (i < ph ? ' done' : i === ph ? ' active' : '');
-  }
-
-  // Topbar
-  document.getElementById('tb-phase').textContent = `Phase ${ph} — ${cfg.name}`;
-  const tlph = document.getElementById('tl-ph');
-  if (tlph) tlph.textContent = `Phase ${ph} — ${cfg.name}`;
-  const lcdph = document.getElementById('lcd-ph');
-  if (lcdph) lcdph.textContent = ph;
-
-  // Notes conditions
-  const noteF = document.getElementById('note-fan');
-  const noteV = document.getElementById('note-vanne');
-  if (noteF) noteF.innerHTML = `<strong>Condition ESP32 :</strong><br/>t &gt; ${cfg.targetT}°C → <code>HIGH</code><br/>t ≤ ${cfg.targetT}°C → <code>LOW</code>`;
-  if (noteV) noteV.innerHTML = `<strong>Condition ESP32 :</strong><br/>h &lt; ${cfg.targetH}% → <code>HIGH</code><br/>h ≥ ${cfg.targetH}% → <code>LOW</code><br/><span style="color:var(--red)">⚠ Aussi ON si alarme temp !</span>`;
-}
-
-// ════════════════════════════════════════════════
-//  NAVIGATION ONGLETS (sans changer Firebase)
-// ════════════════════════════════════════════════
-function goPhase(ph) {
-  document.querySelectorAll('.ptab').forEach(t =>
-    t.classList.toggle('active', parseInt(t.dataset.ph) === ph));
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  const sc = document.getElementById('sc-'+ph);
-  if (sc) sc.classList.add('active');
+function updateNightCD(){
+  const el=document.getElementById('night-cd'); if(!el) return;
+  const now=new Date(), h=now.getHours(), m=now.getMinutes();
+  const nowMin=h*60+m, onMin=17*60+30, offMin=6*60;
+  const nightOn=(nowMin>=onMin||nowMin<offMin);
+  let diff=nightOn?(nowMin<offMin?(offMin-nowMin):(24*60-nowMin+offMin)):(onMin-nowMin);
+  const dh=Math.floor(diff/60), dm=diff%60;
+  el.textContent=nightOn?`🌙 ON — s'éteint dans ${dh}h${String(dm).padStart(2,'0')}`:`☀️ OFF — s'allume dans ${dh>0?dh+'h':''} ${dm}min`;
 }
 
 // ════════════════════════════════════════════════
 //  FIREBASE STATUS
 // ════════════════════════════════════════════════
-function setFbStatus(ok) {
-  const dot  = document.getElementById('fb-dot');
-  const info = document.getElementById('fb-info');
-  dot.className   = 'fb-dot' + (ok ? ' ok' : ' err');
-  info.textContent = ok ? 'Firebase connecté' : 'Déconnecté';
+function setFbOK(ok){
+  const d=document.getElementById('fdot'), i=document.getElementById('finfo');
+  d.className='fdot'+(ok?' ok':' err');
+  i.textContent=ok?'Firebase connecté':'Déconnecté';
 }
 
 // ════════════════════════════════════════════════
 //  HORLOGE
 // ════════════════════════════════════════════════
-function updateClock() {
-  const el = document.getElementById('clk');
-  if (el) el.textContent = new Date().toLocaleTimeString('fr-FR');
+function updateClock(){
+  const el=document.getElementById('clk');
+  if(el) el.textContent=new Date().toLocaleTimeString('fr-FR');
 }
-// On crée un objet pour suivre l'état (ON/OFF) localement
-let etats = { vanne: 0, lumiere: 0, ventilo: 0 };
-
-function toggleDevice(device) {
-    // 1. On inverse l'état (si c'est 0 ça devient 1, si c'est 1 ça devient 0)
-    etats[device] = etats[device] === 0 ? 1 : 0;
-
-    // 2. On envoie la valeur à Firebase
-    // On utilise le chemin /controls/ que l'ESP32 va surveiller
-    firebase.database().ref('controls/' + device).set(etats[device])
-    .then(() => {
-        console.log(device + " mis à jour : " + etats[device]);
-        // Optionnel : changer la couleur du bouton pour montrer que c'est ON
-        alert(device + (etats[device] === 1 ? " ALLUMÉ" : " ÉTEINT"));
-    })
-    .catch((error) => {
-        console.error("Erreur Firebase:", error);
-    });
-}
-
 </script>
 </body>
 </html>
