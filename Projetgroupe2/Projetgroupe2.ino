@@ -62,6 +62,12 @@ bool  nightLightOn   = false;
 bool  ventiloOn      = false;
 bool  vanneOn        = false;
 
+// À ajouter au début du code, après les bibliothèques
+float targetT = 25.0; 
+float targetH = 80.0;
+int hour = 0;
+
+
 // Timers logiciels
 unsigned long lastSensorMs  = 0;
 unsigned long lastFbReadMs  = 0;
@@ -146,12 +152,20 @@ void controlAutomation(int phase, float t, float h) {
         buzzerBip(1, 80); // bip court fin d'alarme
     }
 
-    // ── Envoyer état actionneurs vers Firebase ─────────────────
-    database.set(client, DATABASE_URL "/status/ventilo", String(ventiloOn ? 1 : 0));
-    database.set(client, DATABASE_URL "/status/vanne",   String(vanneOn   ? 1 : 0));
-    database.set(client, DATABASE_URL "/status/alarm",   String(alarmActive ? 1 : 0));
-    database.set(client, DATABASE_URL "/status/targetT", String(targetT, 1));
-    database.set(client, DATABASE_URL "/status/targetH", String(targetH, 1));
+
+ 
+
+// 2. Envoi des états des relais vers /status/
+database.set(client, "/status/ventilo",  ventiloOn ? "1" : "0");
+database.set(client, "/status/nightlight", (hour >= 18 || hour < 6) ? "1" : "0");
+
+// 3. Envoi des cibles et alertes
+database.set(client, "/status/targetT", String(targetT, 1));
+database.set(client, "/status/targetH", String(targetH, 1));
+database.set(client, "/alarms/message", alarmActive ? "Alerte : Conditions critiques !" : "Système OK");
+
+
+
 }
 
 // ════════════════════════════════════════════════
@@ -238,90 +252,41 @@ void setup() {
 //  LOOP
 // ════════════════════════════════════════════════
 void loop() {
-    unsigned long now = millis();
+  // 1. Récupération du temps (pour nightlight)
+  struct tm timeinfo;
+  int hour = 0;
+  if (getLocalTime(&timeinfo)) {
+    hour = timeinfo.tm_hour;
+  }
 
-    // ── Lecture Firebase : phase demandée par le web ───────────
-    if (now - lastFbReadMs >= INTERVAL_FB_READ) {
-        lastFbReadMs = now;
-        database.get(client, DATABASE_URL "/config/currentPhase", result);
-        if (result.available()) {
-            int ph = result.to<RealtimeDatabaseResult>().to<int>();
-            if (ph >= 1 && ph <= 4 && ph != currentPhase) {
-                currentPhase = ph;
-                Serial.printf("[FB] Phase → %d\n", currentPhase);
-            }
-        }
+  // 2. Lecture des capteurs (t et h)
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
 
-        // Lecture commande manuelle ventilateur depuis web
-        AsyncResult res2;
-        database.get(client, DATABASE_URL "/controls/ventilo", res2);
-        if (res2.available()) {
-            int v = res2.to<RealtimeDatabaseResult>().to<int>();
-            // Si le web force ON (v==2), ignorer l'automatique
-            if (v == 2) { digitalWrite(PIN_VENTILO, HIGH); }
-            else if (v == 0) { digitalWrite(PIN_VENTILO, LOW); }
-            // v == 1 = auto (controlAutomation gère)
-        }
-    }
-
-    // ── Lecture capteurs + automation ─────────────────────────
-    if (now - lastSensorMs >= INTERVAL_SENSOR) {
-        lastSensorMs = now;
-        float h = dht.readHumidity();
-        float t = dht.readTemperature();
-
-        if (!isnan(h) && !isnan(t)) {
-            // Envoi Firebase
-            database.set(client, DATABASE_URL "/status/temp", String(t, 1));
-            database.set(client, DATABASE_URL "/status/hum",  String(h, 1));
-
-            // Automation ventilateur + électrovanne + alarme
-            controlAutomation(currentPhase, t, h);
-
-            // Mise à jour LCD
-            updateLCD(t, h);
-
-            Serial.printf("[SENSOR] T:%.1f H:%.1f Ph:%d Fan:%s Vanne:%s Alarm:%s\n",
-                t, h, currentPhase,
-                ventiloOn   ? "ON" : "OFF",
-                vanneOn     ? "ON" : "OFF",
-                alarmActive ? "OUI" : "NON");
-        } else {
-            Serial.println("[DHT22] Erreur lecture !");
-        }
-    }
-
-    // ── Horaire lumière nocturne (vérif toutes les 5 sec) ─────
-    if (now - lastScheduleMs >= INTERVAL_SCHEDULE) {
-        lastScheduleMs = now;
-        controlNightLight();
-    }
-
-
-// --- LECTURE DES COMMANDES MANUELLES ---
-
-// On vérifie l'état de la Vanne
-if (Firebase.RTDB.getInt(&fbdo, "/controls/vanne")) {
-    int etatVanne = fbdo.intData();
-    digitalWrite(PIN_VANNE, etatVanne); // Supposons que la vanne est sur le PIN 12
+  // --- Exemple pour la Vanne ---
+String valStr = database.get<String>(client, "/controls/vanne");
+if (client.lastError().code() == 0) { // Si la lecture a réussi
+    int val = valStr.toInt();
+    digitalWrite(PIN_VANNE, val);
+    vanneOn = (val == 1);
 }
 
-// On vérifie l'état de la Lumière
-if (Firebase.RTDB.getInt(&fbdo, "/controls/lumiere")) {
-    int etatLumiere = fbdo.intData();
-    digitalWrite(PIN_LUMIERED, etatLumiere); // Supposons la lumière sur le PIN 13
+// --- Exemple pour la Lumière ---
+valStr = database.get<String>(client, "/controls/lumiere");
+if (client.lastError().code() == 0) {
+    digitalWrite(PIN_LUMIERED, valStr.toInt());
 }
 
-// On vérifie l'état du Ventilateur
-if (Firebase.RTDB.getInt(&fbdo, "/controls/ventilo")) {
-    int etatVentilo = fbdo.intData();
-    digitalWrite(PIN_VENTILO, etatVentilo); // Supposons le ventilo sur le PIN 14
+// --- Exemple pour le Ventilateur ---
+valStr = database.get<String>(client, "/controls/ventilo");
+if (client.lastError().code() == 0) {
+    int val = valStr.toInt();
+    digitalWrite(PIN_VENTILO, val);
+    ventiloOn = (val == 1);
 }
 
 
-
 }
-
 /*
  ════════════════════════════════════════════════════
   FIREBASE RTDB — Chemins utilisés
